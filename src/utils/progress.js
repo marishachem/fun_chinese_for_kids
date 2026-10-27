@@ -11,7 +11,7 @@ export const LOCATIONS = [
   { id: 7,  req: 70,  name: '低语瀑布',  nameEn: 'Whispering Falls',   color: '#38bdf8', image: '/images/locations/loc08.png' },
   { id: 8,  req: 80,  name: '蝴蝶洞穴',  nameEn: 'Butterfly Cave',     color: '#fb923c', image: '/images/locations/loc09.png' },
   { id: 9,  req: 90,  name: '水晶洞穴',  nameEn: 'Crystal Cave',       color: '#818cf8', image: '/images/locations/loc10.png' },
-  { id: 10, req: 105, name: '龙穴',      nameEn: "Dragon's Lair",      color: '#f87171', image: '/images/locations/loc11.png' },
+  { id: 10, req: 105, name: '冰雪城堡',  nameEn: 'Ice Castle',          color: '#7dd3fc', image: '/images/locations/loc11.png' },
 ];
 
 export function getLocationIndex(count) {
