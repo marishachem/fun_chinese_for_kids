@@ -190,25 +190,104 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
 .stroke-btns { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 
 /* ── COPYBOOK ────────────────────────────────────────── */
-.copybook-info {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
-  padding: 12px 16px; background: white; border-radius: var(--r-sm);
+.cbk-header {
+  display: flex; align-items: center; gap: 8px;
+  background: white; border-radius: var(--r-md);
+  padding: 10px 12px; margin-bottom: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
-.cb-pinyin  { font-size: 22px; }
-.cb-sep     { color: var(--muted); }
-.cb-meaning { font-size: 18px; color: var(--muted); }
-.cb-emoji   { font-size: 28px; margin-left: auto; }
-
-.copybook-panels { display: flex; gap: 32px; flex-wrap: wrap; }
-.copybook-panel  { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.panel-title     { font-size: 18px; font-weight: 700; color: var(--muted); }
-
-.completed-msg {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  font-size: 20px; font-weight: 700; color: var(--green);
-  animation: pop .3s ease;
+.cbk-nav {
+  font-size: 32px; font-weight: 300; line-height: 1;
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  padding: 0 4px; flex-shrink: 0;
 }
+.cbk-nav:disabled { opacity: 0.3; cursor: default; }
+.cbk-info { flex: 1; display: flex; align-items: center; gap: 12px; justify-content: center; }
+.cbk-big  { font-size: 44px; line-height: 1; font-family: 'Noto Serif SC', serif; }
+.cbk-sub  { display: flex; flex-direction: column; gap: 2px; }
+.cbk-pinyin { font-size: 16px; font-weight: 700; }
+.cbk-dot    { color: var(--muted); margin: 0 4px; }
+.cbk-meaning { font-size: 13px; color: var(--muted); }
+
+/* Grid */
+.cbk-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  border: 2px solid #94a3b8;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  background: #94a3b8; /* shows as grid lines */
+  gap: 1px;
+}
+.cbk-cell {
+  position: relative;
+  aspect-ratio: 1;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+/* Dashed center dividers */
+.cbk-cell::before {
+  content: ''; position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  border-left: 1px dashed #cbd5e1;
+  pointer-events: none;
+}
+.cbk-cell::after {
+  content: ''; position: absolute;
+  top: 50%; left: 0; right: 0;
+  border-top: 1px dashed #cbd5e1;
+  pointer-events: none;
+}
+.cbk-cell--empty { cursor: pointer; }
+.cbk-cell--empty:hover { background: #fdf2f8; }
+.cbk-cell--active { background: #fdf2f8; outline: 2px solid #ec4899; outline-offset: -2px; z-index: 1; }
+.cbk-cell--ref { cursor: default; }
+
+.cbk-char {
+  font-size: clamp(20px, 8vw, 50px);
+  line-height: 1;
+  font-family: 'Noto Serif SC', 'STKaiti', serif;
+  color: #1e293b;
+  position: relative; z-index: 1;
+  user-select: none;
+}
+
+/* Progress */
+.cbk-progress-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.cbk-prog-bar-bg {
+  flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;
+}
+.cbk-prog-bar-fill {
+  height: 100%; background: #ec4899; border-radius: 3px;
+  transition: width .3s ease;
+}
+.cbk-prog-label { font-size: 12px; color: var(--muted); flex-shrink: 0; }
+
+/* Quiz panel */
+.cbk-quiz {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  background: white; border-radius: var(--r-md);
+  padding: 16px; margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+.cbk-quiz-title {
+  font-size: 16px; font-weight: 700; color: var(--text);
+}
+.cbk-quiz-box { width: 220px; height: 220px; border-radius: var(--r-sm); overflow: hidden; }
+.cbk-quiz-btns { display: flex; gap: 10px; }
+
+.cbk-hint {
+  text-align: center; font-size: 14px; color: var(--muted);
+  margin-bottom: 12px;
+}
+.cbk-bottom {
+  display: flex; gap: 12px; justify-content: center; margin-top: 4px;
+}
+
 @keyframes pop {
   0%   { transform: scale(.8); opacity: 0; }
   100% { transform: scale(1);  opacity: 1; }
@@ -423,7 +502,6 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
 @media (max-width: 600px) {
   .home-title   { font-size: 40px; }
   .stroke-main  { flex-direction: column; }
-  .copybook-panels { flex-direction: column; }
   .fc-char  { font-size: 80px; }
   .fc-emoji { font-size: 56px; }
 }
