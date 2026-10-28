@@ -711,3 +711,37 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
 .qu-name   { font-size: 16px; color: var(--muted); }
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Review button on map card ── */
+.mc-review-btn {
+  margin-top: 8px; padding: 6px 14px;
+  background: linear-gradient(135deg, #f9a8d4, #c084fc);
+  color: white; font-size: 13px; font-weight: 700;
+  border: none; border-radius: 20px; cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 2px 8px rgba(192,84,252,.3);
+}
+.mc-review-btn:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(192,84,252,.4); }
+
+/* ── Review mode Quiz header ── */
+.review-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+.rh-img { width: 56px; height: 56px; border-radius: 50%; object-fit: contain; background: #fdf0f5; border: 2px solid #f9a8d4; }
+.rh-loc { font-size: 13px; color: var(--muted); }
+
+/* ── Review progress bar ── */
+.review-progress { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.rp-bar-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.rp-bar-fill { height: 100%; background: linear-gradient(90deg, #f9a8d4, #c084fc); border-radius: 3px; transition: width .4s ease; }
+
+/* ── Review done screen ── */
+.review-done {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 32px 16px; text-align: center;
+}
+.rd-emoji  { font-size: 64px; }
+.rd-title  { font-size: 26px; font-weight: 800; color: var(--text); }
+.rd-score  { font-size: 18px; color: var(--muted); }
+.rd-loc    { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
+.rd-img    { width: 100px; height: 100px; border-radius: 50%; object-fit: contain; background: #fdf0f5; border: 3px solid #f9a8d4; }

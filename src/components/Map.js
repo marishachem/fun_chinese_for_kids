@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { LOCATIONS, getProgress, getLocationIndex, resetProgress } from '../utils/progress';
+import characters from '../data/characters';
 
-export default function Map({ onNavigate }) {
+const charMap = Object.fromEntries(characters.map(c => [c.char, c]));
+
+export default function Map({ onNavigate, onReview }) {
   const [prog] = useState(() => getProgress());
   const count  = prog.learned.length;
   const curIdx = getLocationIndex(count);
@@ -45,10 +48,16 @@ export default function Map({ onNavigate }) {
       {/* zigzag */}
       <div className="map-grid">
         {LOCATIONS.map((loc, i) => {
-          const unlocked = count >= loc.req;
-          const isCur    = i === curIdx;
-          const isLeft   = i % 2 === 0;
-          const isLast   = i === LOCATIONS.length - 1;
+          const unlocked  = count >= loc.req;
+          const isCur     = i === curIdx;
+          const isDone    = unlocked && !isCur;
+          const isLeft    = i % 2 === 0;
+          const isLast    = i === LOCATIONS.length - 1;
+          const nextReq   = LOCATIONS[i + 1]?.req ?? prog.learned.length + 1;
+          const locChars  = prog.learned
+            .slice(loc.req, nextReq)
+            .map(ch => charMap[ch])
+            .filter(Boolean);
 
           const card = (
             <div
@@ -62,11 +71,19 @@ export default function Map({ onNavigate }) {
                 {isCur && (
                   <span className="mc-badge" style={{ background: loc.color }}>📍 You are here</span>
                 )}
-                {unlocked && !isCur && (
+                {isDone && (
                   <span className="mc-badge mc-badge--done">✅ Completed!</span>
                 )}
                 {!unlocked && (
                   <span className="mc-badge mc-badge--lock">🔒 {loc.req - count} words away</span>
+                )}
+                {isDone && locChars.length > 0 && onReview && (
+                  <button
+                    className="mc-review-btn"
+                    onClick={e => { e.stopPropagation(); onReview(locChars, loc); }}
+                  >
+                    ✨ Review
+                  </button>
                 )}
               </div>
             </div>

@@ -23,11 +23,29 @@ const PAGES = {
 };
 
 function App() {
-  const [page, setPage] = useState('home');
+  const [page, setPage]           = useState('home');
+  const [reviewSet, setReviewSet] = useState(null);
+  const [reviewLoc, setReviewLoc] = useState(null);
+
+  const navigate = (p) => {
+    if (p !== 'quiz') { setReviewSet(null); setReviewLoc(null); }
+    setPage(p);
+  };
+
+  const startReview = (chars, loc) => {
+    setReviewSet(chars);
+    setReviewLoc(loc);
+    setPage('quiz');
+  };
+
   const Page = PAGES[page];
+  const extra = {};
+  if (page === 'quiz') { extra.reviewSet = reviewSet; extra.reviewLoc = reviewLoc; }
+  if (page === 'map')  extra.onReview = startReview;
+
   return (
     <div className="app">
-      <Page onNavigate={setPage} />
+      <Page onNavigate={navigate} {...extra} />
     </div>
   );
 }
