@@ -4,6 +4,9 @@ import characters from '../data/characters';
 
 const charMap = Object.fromEntries(characters.map(c => [c.char, c]));
 
+// Hue-rotate degrees to shift Elsa's blue dress for each location (0–10)
+const PRINCESS_HUE = [120, 60, 0, 270, 255, 130, 50, 10, 170, 30, -10];
+
 export default function Map({ onNavigate, onReview }) {
   const [prog] = useState(() => getProgress());
   const count  = prog.learned.length;
@@ -96,7 +99,12 @@ export default function Map({ onNavigate, onReview }) {
               </div>
               <div className="map-col-path">
                 {isCur ? (
-                  <img src="/images/princess.png" className="map-princess" alt="You are here" />
+                  <img
+                    src="/images/princess.png"
+                    className="map-princess"
+                    alt="You are here"
+                    style={{ filter: `hue-rotate(${PRINCESS_HUE[curIdx]}deg) drop-shadow(0 4px 8px rgba(0,0,0,.15))` }}
+                  />
                 ) : (
                   <div
                     className="map-dot"

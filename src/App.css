@@ -632,17 +632,17 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
 
 /* princess on map — floats next to current card */
 .map-princess {
-  width: 110px;
+  width: 160px;
   mix-blend-mode: multiply;
   flex-shrink: 0;
-  margin: 0 -33px;   /* spill 33px into each neighbouring column */
+  margin: 0 -58px;   /* (160-44)/2 = 58px spill into neighbouring columns */
   position: relative; z-index: 3;
   animation: princess-float 2.4s ease-in-out infinite;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,.15));
+  transition: filter 0.9s ease;
 }
 @keyframes princess-float {
-  0%, 100% { transform: translateY(0)   rotate(-2deg); }
-  50%       { transform: translateY(-10px) rotate(2deg); }
+  0%, 100% { transform: translateY(0)     rotate(-2deg); }
+  50%       { transform: translateY(-12px) rotate(2deg); }
 }
 
 /* princess in Quiz unlock overlay — waving */
