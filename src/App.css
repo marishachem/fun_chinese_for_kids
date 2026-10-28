@@ -657,12 +657,11 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
   to   { transform: rotate( 12deg) scale(1.08); }
 }
 
-/* connecting line */
-.map-line {
-  flex: 1; min-height: 24px; width: 3px;
-  border-left: 3px dashed #e2e8f0;
+/* curved connecting line (SVG) */
+.map-curve-line {
+  width: 44px; flex: 1; min-height: 70px;
+  overflow: visible; display: block;
 }
-.map-line--on { border-left-style: solid; }
 
 /* location card — 2× portrait */
 .map-card {

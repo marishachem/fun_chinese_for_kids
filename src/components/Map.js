@@ -112,8 +112,18 @@ export default function Map({ onNavigate, onReview }) {
                   />
                 )}
                 {!isLast && (
-                  <div className={`map-line ${unlocked ? 'map-line--on' : ''}`}
-                    style={{ borderColor: unlocked ? loc.color : '#e2e8f0' }} />
+                  <svg className="map-curve-line" viewBox="0 0 44 90" preserveAspectRatio="none">
+                    <path
+                      d={i % 2 === 0
+                        ? 'M 22 0 C 88 22, 88 68, 22 90'
+                        : 'M 22 0 C -44 22, -44 68, 22 90'}
+                      fill="none"
+                      stroke={unlocked ? loc.color : '#e2e8f0'}
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeDasharray={unlocked ? undefined : '7 5'}
+                    />
+                  </svg>
                 )}
               </div>
               <div className="map-col-side map-col-right">
