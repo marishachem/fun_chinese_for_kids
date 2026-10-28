@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import floralBg from './images/floral-bg.jpg';
 import Home from './components/Home';
 import FlashCards from './components/FlashCards';
 import StrokeOrder from './components/StrokeOrder';
@@ -46,8 +47,13 @@ function App() {
   if (page === 'map')  extra.onReview = startReview;
 
   return (
-    <div className="app">
-      <Page onNavigate={navigate} {...extra} />
+    <div style={{
+      minHeight: '100vh',
+      background: `url(${floralBg}) center center / cover fixed`,
+    }}>
+      <div className="app" style={{ background: 'rgba(255,255,255,0.60)' }}>
+        <Page onNavigate={navigate} {...extra} />
+      </div>
     </div>
   );
 }

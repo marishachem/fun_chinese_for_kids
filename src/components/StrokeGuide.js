@@ -2,135 +2,174 @@ import React, { useState, useEffect, useRef } from 'react';
 import HanziWriter from 'hanzi-writer';
 import { STROKES } from '../data/strokes';
 
-function StrokeSVG({ path, size = 56 }) {
+const COLS = 6;
+const ROWS = 5;
+const REF_OPS = [1, 0.55, 0.22];
+
+function makeGrid() {
+  return Array.from({ length: ROWS * COLS }, (_, i) => {
+    const col = i % COLS;
+    const row = Math.floor(i / COLS);
+    if (row === 0 && col < REF_OPS.length) return { state: 'ref', opacity: REF_OPS[col] };
+    return { state: 'empty' };
+  });
+}
+
+// Inline SVG that draws the stroke shape (path from strokes.js)
+function StrokeSVG({ path, size = 52 }) {
   return (
-    <svg
-      viewBox="0 0 60 60"
-      width={size}
-      height={size}
-      style={{ display: 'block' }}
-    >
-      <path
-        d={path}
-        fill="none"
-        stroke="#db2777"
-        strokeWidth="5.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 60 60" width={size} height={size} style={{ display: 'block' }}>
+      <path d={path} fill="none" stroke="#1e293b" strokeWidth="5.5"
+        strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
+// [ - - → ] direction indicator matching the physical book
+function DirectionArrow({ rotation }) {
+  return (
+    <svg
+      viewBox="0 0 80 36"
+      className="sg-arrow-svg"
+      style={{ transform: `rotate(${rotation}deg)` }}
+    >
+      {/* Left bracket */}
+      <polyline points="14,6 8,6 8,30 14,30"
+        fill="none" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* Dashed line */}
+      <line x1="16" y1="18" x2="54" y2="18"
+        stroke="#f97316" strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round"/>
+      {/* Arrowhead */}
+      <polyline points="48,12 60,18 48,24"
+        fill="none" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* Right bracket */}
+      <polyline points="66,6 72,6 72,30 66,30"
+        fill="none" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+// ── Detail / practice page ───────────────────────────────────
 function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
-  const animRef = useRef(null);
-  const quizRef = useRef(null);
+  const [grid, setGrid] = useState(makeGrid);
+  const [activeIdx, setActiveIdx] = useState(null);
+  const cellRefs = useRef({});
   const writerRef = useRef(null);
-  const quizWriterRef = useRef(null);
-  const [quizDone, setQuizDone] = useState(false);
-  const [exIdx, setExIdx] = useState(0);
+  const tc = stroke.traceChar || stroke.char;  // character used in the notebook
 
-  const char = stroke.examples[exIdx] || stroke.examples[0];
+  useEffect(() => { setGrid(makeGrid()); setActiveIdx(null); }, [stroke.id]);
 
   useEffect(() => {
-    if (!animRef.current) return;
-    animRef.current.innerHTML = '';
-    try {
-      writerRef.current = HanziWriter.create(animRef.current, char, {
-        width: 180, height: 180, padding: 14,
-        showOutline: true,
-        strokeColor: '#db2777',
-        outlineColor: '#fce7f3',
-        strokeAnimationSpeed: 0.7,
-        delayBetweenStrokes: 500,
-      });
-      writerRef.current.loopCharacterAnimation();
-    } catch {}
-    return () => { try { writerRef.current?.cancelAnimation(); } catch {} };
-  }, [char]);
-
-  useEffect(() => {
-    if (!quizRef.current) return;
-    setQuizDone(false);
-    quizRef.current.innerHTML = '';
-    try {
-      quizWriterRef.current = HanziWriter.create(quizRef.current, char, {
-        width: 180, height: 180, padding: 14,
-        showOutline: true,
-        strokeColor: '#db2777',
-        outlineColor: '#fce7f3',
-        drawingColor: '#7c3aed',
-        showHintAfterMisses: 3,
-      });
-      const startQuiz = () => {
-        setQuizDone(false);
-        quizWriterRef.current.quiz({
+    if (activeIdx === null) return;
+    const timer = setTimeout(() => {
+      const cellEl = cellRefs.current[activeIdx];
+      if (!cellEl) return;
+      const container = cellEl.querySelector('.cbk-inline-writer');
+      if (!container) return;
+      container.innerHTML = '';
+      const rect = cellEl.getBoundingClientRect();
+      const size = Math.floor(Math.min(rect.width, rect.height)) - 2;
+      try {
+        if (writerRef.current) { try { writerRef.current.cancelQuiz(); } catch {} }
+        writerRef.current = HanziWriter.create(container, tc, {
+          width: size, height: size,
+          padding: Math.max(4, Math.floor(size * 0.07)),
+          showOutline: true,
+          strokeColor: '#db2777', outlineColor: '#fce7f3', drawingColor: '#7c3aed',
+          showHintAfterMisses: 3,
+        });
+        writerRef.current.quiz({
           onComplete: () => {
-            setQuizDone(true);
-            setTimeout(() => startQuiz(), 1400);
+            setGrid(prev => { const n = [...prev]; n[activeIdx] = { state: 'done' }; return n; });
+            setActiveIdx(prev => {
+              const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
+              return nextEmpty !== -1 ? nextEmpty : null;
+            });
           },
         });
-      };
-      startQuiz();
-    } catch {}
-    return () => { try { quizWriterRef.current?.cancelQuiz(); } catch {} };
-  }, [char]);
+      } catch {}
+    }, 30);
+    return () => { clearTimeout(timer); try { writerRef.current?.cancelQuiz(); } catch {}; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIdx, tc]);
+
+  const doneCells = grid.filter(c => c.state === 'done').length;
+  const totalPractice = ROWS * COLS - REF_OPS.length;
 
   return (
     <div className="page">
       <button className="back-btn" onClick={onClose}>← All Strokes</button>
 
-      <div className="sd-header">
-        <span className="sd-num">#{stroke.id}</span>
-        <div className="sd-shape-lg">
-          <StrokeSVG path={stroke.path} size={72} />
+      {/* How-to-draw header */}
+      <div className="sgg-detail-header">
+        <div className="sgg-dh-top">
+          {stroke.path
+            ? <StrokeSVG path={stroke.path} size={60} />
+            : <span className="sgg-dh-char">{stroke.char}</span>}
+          <DirectionArrow rotation={stroke.arrowRot} />
+          <div>
+            <div className="sgg-dh-name">{stroke.name}</div>
+            <div className="sgg-dh-cn">{stroke.chinese}</div>
+          </div>
         </div>
-        <div>
-          <div className="sd-name">{stroke.name}</div>
-          <div className="sd-cn">{stroke.chinese}</div>
+        <div className="sgg-how-to">
+          ✏️ {stroke.howToDraw}
+        </div>
+        <div className="sgg-example-label">
+          Example: <span className="sgg-ex-char">{stroke.example.char}</span>
+          <span className="sgg-ex-pinyin"> {stroke.example.pinyin}</span>
+          <span className="sgg-ex-meaning"> · {stroke.example.meaning}</span>
         </div>
       </div>
 
-      <div className="sd-ex-row">
-        <span className="sd-ex-label">Example:</span>
-        {stroke.examples.map((ex, i) => (
-          <button
-            key={ex}
-            className={`sd-ex-btn ${i === exIdx ? 'sd-ex-btn--active' : ''}`}
-            onClick={() => setExIdx(i)}
+      {/* Copybook grid */}
+      <div className="cbk-grid">
+        {grid.map((cell, i) => (
+          <div
+            key={i}
+            ref={el => { cellRefs.current[i] = el; }}
+            className={[
+              'cbk-cell',
+              cell.state === 'empty' ? 'cbk-cell--empty' : '',
+              i === activeIdx ? 'cbk-cell--active' : '',
+              cell.state === 'done' ? 'cbk-cell--done' : '',
+              cell.state === 'ref' ? 'cbk-cell--ref' : '',
+            ].join(' ')}
+            onClick={() => { if (cell.state === 'empty' && i !== activeIdx) setActiveIdx(i); }}
           >
-            {ex}
-          </button>
+            {i === activeIdx
+              ? <div className="cbk-inline-writer" />
+              : cell.state === 'ref'
+                ? <span className="cbk-char" style={{ opacity: cell.opacity }}>{tc}</span>
+                : cell.state === 'done'
+                  ? <span className="cbk-char" style={{ opacity: 0.2 }}>{tc}</span>
+                  : null
+            }
+          </div>
         ))}
       </div>
 
-      <div className="sd-panels">
-        <div className="sd-panel">
-          <div className="sd-panel-title">👀 Watch</div>
-          <div className="sg-writer-box tian" ref={animRef} />
-          <div className="sd-panel-sub">Stroke order</div>
+      <div className="cbk-progress-row">
+        <div className="cbk-prog-bar-bg">
+          <div className="cbk-prog-bar-fill" style={{ width: `${(doneCells / totalPractice) * 100}%` }} />
         </div>
-        <div className="sd-panel">
-          <div className="sd-panel-title">✏️ Trace</div>
-          <div className="sg-writer-box tian" ref={quizRef} />
-          <div className="sd-panel-sub">
-            {quizDone ? '🎉 Great job!' : 'Follow strokes'}
-          </div>
-        </div>
+        <span className="cbk-prog-label">{doneCells}/{totalPractice}</span>
       </div>
 
-      <div className="sd-nav">
-        <button className="btn btn-secondary" onClick={onPrev} disabled={stroke.id === 1}>
-          ← Prev
-        </button>
-        <button className="btn btn-primary" onClick={onNext} disabled={stroke.id === STROKES.length}>
-          Next →
-        </button>
+      <p className="cbk-hint">
+        {doneCells === totalPractice ? '🏆 Perfect!' : activeIdx !== null ? '✏️ Trace the stroke' : 'Tap a cell to practise'}
+      </p>
+
+      <div className="cbk-bottom">
+        <button className="btn btn-secondary" onClick={() => { setGrid(makeGrid()); setActiveIdx(null); }}>↺ Reset</button>
+        <button className="btn btn-secondary" onClick={onPrev} disabled={stroke.id === 1}>← Prev</button>
+        <button className="btn btn-primary"   onClick={onNext} disabled={stroke.id === STROKES.length}>Next →</button>
       </div>
     </div>
   );
 }
 
+// ── Main grid page ────────────────────────────────────────────
 export default function StrokeGuide({ onNavigate }) {
   const [selected, setSelected] = useState(null);
 
@@ -139,8 +178,8 @@ export default function StrokeGuide({ onNavigate }) {
       <StrokeDetail
         stroke={selected}
         onClose={() => setSelected(null)}
-        onNext={() => setSelected(STROKES[selected.id])}
-        onPrev={() => setSelected(STROKES[selected.id - 2])}
+        onNext={() => setSelected(STROKES[selected.id])}      // next by index
+        onPrev={() => setSelected(STROKES[selected.id - 2])}  // prev by index
       />
     );
   }
@@ -149,23 +188,29 @@ export default function StrokeGuide({ onNavigate }) {
     <div className="page">
       <button className="back-btn" onClick={() => onNavigate('home')}>← Home</button>
       <h2 className="page-title">Stroke Guide 笔画</h2>
-      <p className="sg-subtitle">Tap a stroke to watch & practise it</p>
+      <p className="sg-subtitle">Learn how each stroke is drawn — tap a card to practise</p>
 
-      <div className="sg-grid">
+      <div className="sgg-grid">
         {STROKES.map(stroke => (
-          <button
-            key={stroke.id}
-            className="sg-card"
-            onClick={() => setSelected(stroke)}
-          >
-            <div className="sgc-top">
-              <span className="sgc-num">{stroke.id}</span>
-              <div className="sgc-shape">
-                <StrokeSVG path={stroke.path} size={52} />
-              </div>
+          <button key={stroke.id} className="sgg-card" onClick={() => setSelected(stroke)}>
+            {/* Number badge */}
+            <span className="sgg-num">{stroke.id}</span>
+
+            {/* Stroke shape + direction arrow */}
+            <div className="sgg-card-top">
+              {stroke.path
+                ? <StrokeSVG path={stroke.path} size={48} />
+                : <span className="sgg-stroke-char">{stroke.char}</span>}
+              <DirectionArrow rotation={stroke.arrowRot} />
             </div>
-            <div className="sgc-name">{stroke.name}</div>
-            <div className="sgc-ex">{stroke.examples.join('、')}</div>
+
+            {/* Name */}
+            <div className="sgg-name">{stroke.name} <span className="sgg-cn">{stroke.chinese}</span></div>
+
+            {/* Example */}
+            <div className="sgg-example">
+              {stroke.example.char} {stroke.example.pinyin} · {stroke.example.meaning}
+            </div>
           </button>
         ))}
       </div>
