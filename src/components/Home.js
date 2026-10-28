@@ -9,6 +9,7 @@ const modes = [
   { id: 'numbers',    label: 'Numbers',      emoji: '🔢', desc: 'Count on one hand!',          color: 'orange' },
   { id: 'pinyin',     label: 'Pinyin',       emoji: '🎵', desc: 'Tones, sounds & phonics',     color: 'teal' },
   { id: 'stories',    label: 'Stories',      emoji: '📖', desc: 'Read fun Chinese stories',    color: 'gold' },
+  { id: 'strokes',    label: 'Stroke Guide', emoji: '🖊️', desc: 'Learn every Chinese stroke',   color: 'pink' },
 ];
 
 function Home({ onNavigate }) {

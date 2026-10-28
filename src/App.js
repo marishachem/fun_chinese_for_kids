@@ -8,6 +8,7 @@ import Stories from './components/Stories';
 import Numbers from './components/Numbers';
 import Pinyin from './components/Pinyin';
 import Map from './components/Map';
+import StrokeGuide from './components/StrokeGuide';
 import './App.css';
 
 const PAGES = {
@@ -20,6 +21,7 @@ const PAGES = {
   numbers:    Numbers,
   pinyin:     Pinyin,
   map:        Map,
+  strokes:    StrokeGuide,
 };
 
 function App() {
