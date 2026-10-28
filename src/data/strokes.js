@@ -19,17 +19,19 @@ export const STROKES = [
   },
   {
     id: 3, name: 'piě', chinese: '撇',
+    img: '/strokes/pie.png',
     char: '丿', traceChar: '丿',
     arrowRot: 135,
-    howToDraw: 'From top-right to bottom-left — like the 1st stroke of 八',
+    howToDraw: 'From left, top to bottom-left — like the 1st stroke of 八',
     example: { char: '八', pinyin: 'bā', meaning: 'eight', tone: 1 },
   },
   {
     id: 4, name: 'nà', chinese: '捺',
-    char: '乀', traceChar: '乀',
+    img: '/strokes/na.png',   // calligraphic image — SVG path can't show the broad pressed end
+    char: '入', traceChar: '入',
     arrowRot: 45,
-    howToDraw: 'From top-left to bottom-right, pressing wider at the end — like the 2nd stroke of 八',
-    example: { char: '入', pinyin: 'rù', meaning: 'enter', tone: 4 },
+    howToDraw: 'From top, press down to the right — like the 2nd stroke of 八',
+    example: { char: '八', pinyin: 'bā', meaning: 'eight', tone: 1 },
   },
   {
     id: 5, name: 'diǎn', chinese: '点',

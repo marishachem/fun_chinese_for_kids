@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import HanziWriter from 'hanzi-writer';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import DrawingCanvas from './DrawingCanvas';
 import characters from '../data/characters';
 
 const CATS = ['all', ...Array.from(new Set(characters.map(c => c.category))).sort()];
@@ -31,67 +31,31 @@ export default function Copybook({ onNavigate }) {
   const [grid, setGrid] = useState(makeGrid);
   const [activeIdx, setActiveIdx] = useState(null);
 
-  const cellRefs = useRef({});
-  const writerRef = useRef(null);
-
+  // Load saved grid when character changes
   useEffect(() => {
-    setGrid(makeGrid());
+    try {
+      const saved = localStorage.getItem(`cbk_${ch.char}`);
+      setGrid(saved ? JSON.parse(saved) : makeGrid());
+    } catch { setGrid(makeGrid()); }
     setActiveIdx(null);
   }, [ch.char]);
 
-  // When activeIdx changes, spin up hanzi-writer inside that cell
-  useEffect(() => {
-    if (activeIdx === null) return;
-
-    // Small delay so the .cbk-inline-writer div is in the DOM
-    const timer = setTimeout(() => {
-      const cellEl = cellRefs.current[activeIdx];
-      if (!cellEl) return;
-      const container = cellEl.querySelector('.cbk-inline-writer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const rect = cellEl.getBoundingClientRect();
-      const size = Math.floor(Math.min(rect.width, rect.height)) - 2;
-
-      try {
-        if (writerRef.current) { try { writerRef.current.cancelQuiz(); } catch {} }
-        writerRef.current = HanziWriter.create(container, ch.char, {
-          width: size, height: size,
-          padding: Math.max(4, Math.floor(size * 0.07)),
-          showOutline: true,
-          strokeColor: '#db2777',
-          outlineColor: '#fce7f3',
-          drawingColor: '#7c3aed',
-          showHintAfterMisses: 3,
-        });
-        writerRef.current.quiz({
-          onComplete: () => {
-            setGrid(prev => {
-              const next = [...prev];
-              next[activeIdx] = { state: 'done' };
-              return next;
-            });
-            // Auto-advance to next empty cell
-            setActiveIdx(prev => {
-              const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
-              return nextEmpty !== -1 ? nextEmpty : null;
-            });
-          },
-        });
-      } catch {}
-    }, 30);
-
-    return () => {
-      clearTimeout(timer);
-      try { writerRef.current?.cancelQuiz(); } catch {}
-    };
+  const markDone = useCallback((idx, dataURL) => {
+    setGrid(prev => {
+      const n = [...prev];
+      n[idx] = { state: 'done', drawing: dataURL };
+      try { localStorage.setItem(`cbk_${ch.char}`, JSON.stringify(n)); } catch {}
+      return n;
+    });
+    setActiveIdx(prev => {
+      const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
+      return nextEmpty !== -1 ? nextEmpty : null;
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIdx, ch.char]);
+  }, [grid, ch.char]);
 
   const handleCellClick = useCallback((idx, cell) => {
-    if (cell.state !== 'empty' || idx === activeIdx) return;
-    setActiveIdx(idx);
+    if (cell.state === 'empty' && idx !== activeIdx) setActiveIdx(idx);
   }, [activeIdx]);
 
   const handleCat = (c) => { setCat(c); setCharIdx(0); };
@@ -131,7 +95,6 @@ export default function Copybook({ onNavigate }) {
         {grid.map((cell, i) => (
           <div
             key={i}
-            ref={el => { cellRefs.current[i] = el; }}
             className={[
               'cbk-cell',
               cell.state === 'empty' ? 'cbk-cell--empty' : '',
@@ -142,11 +105,17 @@ export default function Copybook({ onNavigate }) {
             onClick={() => handleCellClick(i, cell)}
           >
             {i === activeIdx
-              ? <div className="cbk-inline-writer" />
+              ? <DrawingCanvas
+                  guide={<span className="cbk-char">{ch.char}</span>}
+                  onDone={(dataURL) => markDone(i, dataURL)}
+                />
               : cell.state === 'ref'
                 ? <span className="cbk-char" style={{ opacity: cell.opacity }}>{ch.char}</span>
                 : cell.state === 'done'
-                  ? <span className="cbk-char" style={{ opacity: 0.2 }}>{ch.char}</span>
+                  ? <>
+                      <span className="cbk-char" style={{ opacity: 0.12 }}>{ch.char}</span>
+                      {cell.drawing && <img src={cell.drawing} alt="" className="dc-saved-drawing" />}
+                    </>
                   : null
             }
           </div>
@@ -169,7 +138,7 @@ export default function Copybook({ onNavigate }) {
       </p>
 
       <div className="cbk-bottom">
-        <button className="btn btn-secondary" onClick={() => { setGrid(makeGrid()); setActiveIdx(null); }}>
+        <button className="btn btn-secondary" onClick={() => { const g = makeGrid(); setGrid(g); setActiveIdx(null); try { localStorage.setItem(`cbk_${ch.char}`, JSON.stringify(g)); } catch {} }}>
           ↺ Reset
         </button>
         <button className="btn btn-primary" onClick={() => handleChar(1)} disabled={charIdx === filtered.length - 1}>

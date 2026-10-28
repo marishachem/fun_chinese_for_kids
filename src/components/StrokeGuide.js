@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import HanziWriter from 'hanzi-writer';
+import React, { useState, useEffect, useCallback } from 'react';
+import DrawingCanvas from './DrawingCanvas';
 import { STROKES } from '../data/strokes';
 
 const COLS = 6;
@@ -53,45 +53,30 @@ function DirectionArrow({ rotation }) {
 function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
   const [grid, setGrid] = useState(makeGrid);
   const [activeIdx, setActiveIdx] = useState(null);
-  const cellRefs = useRef({});
-  const writerRef = useRef(null);
-  const tc = stroke.traceChar || stroke.char;  // character used in the notebook
+  const tc = stroke.traceChar || stroke.char;
 
-  useEffect(() => { setGrid(makeGrid()); setActiveIdx(null); }, [stroke.id]);
-
+  // Load saved grid when stroke changes
   useEffect(() => {
-    if (activeIdx === null) return;
-    const timer = setTimeout(() => {
-      const cellEl = cellRefs.current[activeIdx];
-      if (!cellEl) return;
-      const container = cellEl.querySelector('.cbk-inline-writer');
-      if (!container) return;
-      container.innerHTML = '';
-      const rect = cellEl.getBoundingClientRect();
-      const size = Math.floor(Math.min(rect.width, rect.height)) - 2;
-      try {
-        if (writerRef.current) { try { writerRef.current.cancelQuiz(); } catch {} }
-        writerRef.current = HanziWriter.create(container, tc, {
-          width: size, height: size,
-          padding: Math.max(4, Math.floor(size * 0.07)),
-          showOutline: true,
-          strokeColor: '#db2777', outlineColor: '#fce7f3', drawingColor: '#7c3aed',
-          showHintAfterMisses: 3,
-        });
-        writerRef.current.quiz({
-          onComplete: () => {
-            setGrid(prev => { const n = [...prev]; n[activeIdx] = { state: 'done' }; return n; });
-            setActiveIdx(prev => {
-              const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
-              return nextEmpty !== -1 ? nextEmpty : null;
-            });
-          },
-        });
-      } catch {}
-    }, 30);
-    return () => { clearTimeout(timer); try { writerRef.current?.cancelQuiz(); } catch {}; };
+    try {
+      const saved = localStorage.getItem(`sgg_${stroke.id}`);
+      setGrid(saved ? JSON.parse(saved) : makeGrid());
+    } catch { setGrid(makeGrid()); }
+    setActiveIdx(null);
+  }, [stroke.id]);
+
+  const markDone = useCallback((idx, dataURL) => {
+    setGrid(prev => {
+      const n = [...prev];
+      n[idx] = { state: 'done', drawing: dataURL };
+      try { localStorage.setItem(`sgg_${stroke.id}`, JSON.stringify(n)); } catch {}
+      return n;
+    });
+    setActiveIdx(prev => {
+      const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
+      return nextEmpty !== -1 ? nextEmpty : null;
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIdx, tc]);
+  }, [grid, stroke.id]);
 
   const doneCells = grid.filter(c => c.state === 'done').length;
   const totalPractice = ROWS * COLS - REF_OPS.length;
@@ -103,9 +88,11 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
       {/* How-to-draw header */}
       <div className="sgg-detail-header">
         <div className="sgg-dh-top">
-          {stroke.path
-            ? <StrokeSVG path={stroke.path} size={60} />
-            : <span className="sgg-dh-char">{stroke.char}</span>}
+          {stroke.img
+            ? <img src={stroke.img} alt={stroke.name} className="sgg-stroke-img sgg-stroke-img--lg" />
+            : stroke.path
+              ? <StrokeSVG path={stroke.path} size={60} />
+              : <span className="sgg-dh-char">{stroke.char}</span>}
           <DirectionArrow rotation={stroke.arrowRot} />
           <div>
             <div className="sgg-dh-name">{stroke.name}</div>
@@ -127,7 +114,6 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
         {grid.map((cell, i) => (
           <div
             key={i}
-            ref={el => { cellRefs.current[i] = el; }}
             className={[
               'cbk-cell',
               cell.state === 'empty' ? 'cbk-cell--empty' : '',
@@ -138,11 +124,23 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
             onClick={() => { if (cell.state === 'empty' && i !== activeIdx) setActiveIdx(i); }}
           >
             {i === activeIdx
-              ? <div className="cbk-inline-writer" />
+              ? <DrawingCanvas
+                  guide={stroke.img
+                    ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" />
+                    : <span className="cbk-char">{tc}</span>}
+                  onDone={(dataURL) => markDone(i, dataURL)}
+                />
               : cell.state === 'ref'
-                ? <span className="cbk-char" style={{ opacity: cell.opacity }}>{tc}</span>
+                ? stroke.img
+                  ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" style={{ opacity: cell.opacity }} />
+                  : <span className="cbk-char" style={{ opacity: cell.opacity }}>{tc}</span>
                 : cell.state === 'done'
-                  ? <span className="cbk-char" style={{ opacity: 0.2 }}>{tc}</span>
+                  ? <>
+                      {stroke.img
+                        ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" style={{ opacity: 0.12 }} />
+                        : <span className="cbk-char" style={{ opacity: 0.12 }}>{tc}</span>}
+                      {cell.drawing && <img src={cell.drawing} alt="" className="dc-saved-drawing" />}
+                    </>
                   : null
             }
           </div>
@@ -161,7 +159,7 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
       </p>
 
       <div className="cbk-bottom">
-        <button className="btn btn-secondary" onClick={() => { setGrid(makeGrid()); setActiveIdx(null); }}>↺ Reset</button>
+        <button className="btn btn-secondary" onClick={() => { const g = makeGrid(); setGrid(g); setActiveIdx(null); try { localStorage.setItem(`sgg_${stroke.id}`, JSON.stringify(g)); } catch {} }}>↺ Reset</button>
         <button className="btn btn-secondary" onClick={onPrev} disabled={stroke.id === 1}>← Prev</button>
         <button className="btn btn-primary"   onClick={onNext} disabled={stroke.id === STROKES.length}>Next →</button>
       </div>
@@ -198,9 +196,11 @@ export default function StrokeGuide({ onNavigate }) {
 
             {/* Stroke shape + direction arrow */}
             <div className="sgg-card-top">
-              {stroke.path
-                ? <StrokeSVG path={stroke.path} size={48} />
-                : <span className="sgg-stroke-char">{stroke.char}</span>}
+              {stroke.img
+                ? <img src={stroke.img} alt={stroke.name} className="sgg-stroke-img" />
+                : stroke.path
+                  ? <StrokeSVG path={stroke.path} size={48} />
+                  : <span className="sgg-stroke-char">{stroke.char}</span>}
               <DirectionArrow rotation={stroke.arrowRot} />
             </div>
 
