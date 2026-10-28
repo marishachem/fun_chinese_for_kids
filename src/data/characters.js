@@ -1,7 +1,7 @@
 const characters = [
   // ── people ────────────────────────────────────────────
   { char: '人', pinyin: 'rén',   tone: 2, meaning: 'person',   emoji: '🧑',  category: 'people', image: '/images/person.png' },
-  { char: '爸', pinyin: 'bà',    tone: 4, meaning: 'dad',       emoji: '👨',  category: 'people' },
+  { char: '爸', pinyin: 'bà',    tone: 4, meaning: 'dad',       emoji: '👨',  category: 'people', image: '/images/dad.png' },
   { char: '妈', pinyin: 'mā',    tone: 1, meaning: 'mom',       emoji: '👩',  category: 'people' },
   { char: '我', pinyin: 'wǒ',    tone: 3, meaning: 'I / me',    emoji: '👤',  category: 'people' },
 
