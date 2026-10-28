@@ -4,10 +4,9 @@ import characters from '../data/characters';
 
 const CATS = ['all', ...Array.from(new Set(characters.map(c => c.category))).sort()];
 const TONE_CLS = ['tone-0', 'tone-1', 'tone-2', 'tone-3', 'tone-4'];
-const COLS = 8;
-const ROWS = 6;
-// First 4 cells of row 1 are reference cells at fading opacities
-const REF_OPS = [1, 0.6, 0.35, 0.15];
+const COLS = 6;
+const ROWS = 5;
+const REF_OPS = [1, 0.55, 0.22]; // first 3 cells = fading reference
 
 function makeGrid() {
   return Array.from({ length: ROWS * COLS }, (_, i) => {
@@ -31,60 +30,75 @@ export default function Copybook({ onNavigate }) {
 
   const [grid, setGrid] = useState(makeGrid);
   const [activeIdx, setActiveIdx] = useState(null);
-  const [quizDone, setQuizDone] = useState(false);
 
-  const quizRef = useRef(null);
+  const cellRefs = useRef({});
   const writerRef = useRef(null);
 
   useEffect(() => {
     setGrid(makeGrid());
     setActiveIdx(null);
-    setQuizDone(false);
   }, [ch.char]);
 
+  // When activeIdx changes, spin up hanzi-writer inside that cell
   useEffect(() => {
-    if (activeIdx === null || !quizRef.current) return;
-    quizRef.current.innerHTML = '';
-    setQuizDone(false);
-    try {
-      writerRef.current = HanziWriter.create(quizRef.current, ch.char, {
-        width: 220, height: 220, padding: 16,
-        showOutline: true,
-        strokeColor: '#db2777',
-        outlineColor: '#fce7f3',
-        drawingColor: '#7c3aed',
-        showHintAfterMisses: 3,
-      });
-      writerRef.current.quiz({
-        onComplete: () => {
-          setGrid(prev => {
-            const next = [...prev];
-            next[activeIdx] = { state: 'done' };
-            return next;
-          });
-          setQuizDone(true);
-        },
-      });
-    } catch {}
-    return () => { try { writerRef.current?.cancelQuiz(); } catch {} };
+    if (activeIdx === null) return;
+
+    // Small delay so the .cbk-inline-writer div is in the DOM
+    const timer = setTimeout(() => {
+      const cellEl = cellRefs.current[activeIdx];
+      if (!cellEl) return;
+      const container = cellEl.querySelector('.cbk-inline-writer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const rect = cellEl.getBoundingClientRect();
+      const size = Math.floor(Math.min(rect.width, rect.height)) - 2;
+
+      try {
+        if (writerRef.current) { try { writerRef.current.cancelQuiz(); } catch {} }
+        writerRef.current = HanziWriter.create(container, ch.char, {
+          width: size, height: size,
+          padding: Math.max(4, Math.floor(size * 0.07)),
+          showOutline: true,
+          strokeColor: '#db2777',
+          outlineColor: '#fce7f3',
+          drawingColor: '#7c3aed',
+          showHintAfterMisses: 3,
+        });
+        writerRef.current.quiz({
+          onComplete: () => {
+            setGrid(prev => {
+              const next = [...prev];
+              next[activeIdx] = { state: 'done' };
+              return next;
+            });
+            // Auto-advance to next empty cell
+            setActiveIdx(prev => {
+              const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
+              return nextEmpty !== -1 ? nextEmpty : null;
+            });
+          },
+        });
+      } catch {}
+    }, 30);
+
+    return () => {
+      clearTimeout(timer);
+      try { writerRef.current?.cancelQuiz(); } catch {}
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIdx, ch.char]);
 
   const handleCellClick = useCallback((idx, cell) => {
-    if (cell.state !== 'empty') return;
+    if (cell.state !== 'empty' || idx === activeIdx) return;
     setActiveIdx(idx);
-    setQuizDone(false);
-  }, []);
+  }, [activeIdx]);
 
   const handleCat = (c) => { setCat(c); setCharIdx(0); };
   const handleChar = (dir) => setCharIdx(i => Math.max(0, Math.min(filtered.length - 1, i + dir)));
 
   const doneCells = grid.filter(c => c.state === 'done').length;
   const totalPractice = ROWS * COLS - REF_OPS.length;
-
-  const goNextEmpty = () => {
-    const next = grid.findIndex((c, i) => c.state === 'empty' && i > (activeIdx ?? -1));
-    setActiveIdx(next !== -1 ? next : null);
-  };
 
   return (
     <div className="page">
@@ -100,7 +114,6 @@ export default function Copybook({ onNavigate }) {
         ))}
       </div>
 
-      {/* Character header */}
       <div className="cbk-header">
         <button className="cbk-nav" onClick={() => handleChar(-1)} disabled={charIdx === 0}>‹</button>
         <div className="cbk-info">
@@ -114,11 +127,11 @@ export default function Copybook({ onNavigate }) {
         <button className="cbk-nav" onClick={() => handleChar(1)} disabled={charIdx === filtered.length - 1}>›</button>
       </div>
 
-      {/* Copybook grid */}
       <div className="cbk-grid">
         {grid.map((cell, i) => (
           <div
             key={i}
+            ref={el => { cellRefs.current[i] = el; }}
             className={[
               'cbk-cell',
               cell.state === 'empty' ? 'cbk-cell--empty' : '',
@@ -128,22 +141,18 @@ export default function Copybook({ onNavigate }) {
             ].join(' ')}
             onClick={() => handleCellClick(i, cell)}
           >
-            {(cell.state === 'ref' || cell.state === 'done') && (
-              <span
-                className="cbk-char"
-                style={{ opacity: cell.state === 'ref' ? cell.opacity : 0.2 }}
-              >
-                {ch.char}
-              </span>
-            )}
-            {i === activeIdx && cell.state === 'empty' && (
-              <span className="cbk-active-dot" />
-            )}
+            {i === activeIdx
+              ? <div className="cbk-inline-writer" />
+              : cell.state === 'ref'
+                ? <span className="cbk-char" style={{ opacity: cell.opacity }}>{ch.char}</span>
+                : cell.state === 'done'
+                  ? <span className="cbk-char" style={{ opacity: 0.2 }}>{ch.char}</span>
+                  : null
+            }
           </div>
         ))}
       </div>
 
-      {/* Progress bar */}
       <div className="cbk-progress-row">
         <div className="cbk-prog-bar-bg">
           <div className="cbk-prog-bar-fill" style={{ width: `${(doneCells / totalPractice) * 100}%` }} />
@@ -151,34 +160,20 @@ export default function Copybook({ onNavigate }) {
         <span className="cbk-prog-label">{doneCells}/{totalPractice}</span>
       </div>
 
-      {/* Quiz panel */}
-      {activeIdx !== null ? (
-        <div className="cbk-quiz">
-          <div className="cbk-quiz-title">
-            {quizDone ? '🎉 Well done!' : '✏️ Trace the character'}
-          </div>
-          <div className="tian cbk-quiz-box" ref={quizRef} />
-          {quizDone && (
-            <div className="cbk-quiz-btns">
-              <button className="btn btn-secondary" onClick={() => setActiveIdx(null)}>← Back to grid</button>
-              <button className="btn btn-primary" onClick={goNextEmpty}>Next cell →</button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <p className="cbk-hint">
-          {doneCells === totalPractice
-            ? '🏆 All done! Great work!'
-            : 'Tap an empty cell to trace'}
-        </p>
-      )}
+      <p className="cbk-hint">
+        {doneCells === totalPractice
+          ? '🏆 All done!'
+          : activeIdx !== null
+            ? '✏️ Trace the strokes'
+            : 'Tap a cell to write'}
+      </p>
 
       <div className="cbk-bottom">
         <button className="btn btn-secondary" onClick={() => { setGrid(makeGrid()); setActiveIdx(null); }}>
           ↺ Reset
         </button>
         <button className="btn btn-primary" onClick={() => handleChar(1)} disabled={charIdx === filtered.length - 1}>
-          Next character →
+          Next →
         </button>
       </div>
     </div>
