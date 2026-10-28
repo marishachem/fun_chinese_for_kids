@@ -1,37 +1,119 @@
+// 23 compound strokes with SVG path data (viewBox 0 0 60 60)
+// paths use round linecap/linejoin, fill:none
 export const STROKES = [
-  { id: 1,  name: '点',        pinyin: 'diǎn',               example: '立', group: 'basic' },
-  { id: 2,  name: '横',        pinyin: 'héng',               example: '二', group: 'basic' },
-  { id: 3,  name: '竖',        pinyin: 'shù',                example: '干', group: 'basic' },
-  { id: 4,  name: '撇',        pinyin: 'piě',                example: '八', group: 'basic' },
-  { id: 5,  name: '捺',        pinyin: 'nà',                 example: '入', group: 'basic' },
-  { id: 6,  name: '提',        pinyin: 'tí',                 example: '冰', group: 'basic' },
-  { id: 7,  name: '竖钩',      pinyin: 'shù gōu',            example: '小', group: 'hooks' },
-  { id: 8,  name: '弯钩',      pinyin: 'wān gōu',            example: '狗', group: 'hooks' },
-  { id: 9,  name: '斜钩',      pinyin: 'xié gōu',            example: '我', group: 'hooks' },
-  { id: 10, name: '卧钩',      pinyin: 'wò gōu',             example: '心', group: 'hooks' },
-  { id: 11, name: '竖弯',      pinyin: 'shù wān',            example: '四', group: 'hooks' },
-  { id: 12, name: '竖弯钩',    pinyin: 'shù wān gōu',        example: '元', group: 'hooks' },
-  { id: 13, name: '竖提',      pinyin: 'shù tí',             example: '良', group: 'hooks' },
-  { id: 14, name: '横钩',      pinyin: 'héng gōu',           example: '你', group: 'hooks' },
-  { id: 15, name: '横折',      pinyin: 'héng zhé',           example: '口', group: 'folds' },
-  { id: 16, name: '横折钩',    pinyin: 'héng zhé gōu',       example: '月', group: 'folds' },
-  { id: 17, name: '横撇',      pinyin: 'héng piě',           example: '水', group: 'folds' },
-  { id: 18, name: '撇折',      pinyin: 'piě zhé',            example: '去', group: 'folds' },
-  { id: 19, name: '撇点',      pinyin: 'piě diǎn',           example: '女', group: 'folds' },
-  { id: 20, name: '横折弯钩',  pinyin: 'héng zhé wān gōu',   example: '九', group: 'folds' },
-  { id: 21, name: '竖折',      pinyin: 'shù zhé',            example: '山', group: 'folds' },
-  { id: 22, name: '竖折折钩',  pinyin: 'shù zhé zhé gōu',    example: '与', group: 'compound' },
-  { id: 23, name: '横折提',    pinyin: 'héng zhé tí',        example: '说', group: 'compound' },
-  { id: 24, name: '横折折撇',  pinyin: 'héng zhé zhé piě',   example: '及', group: 'compound' },
-  { id: 25, name: '横撇弯钩',  pinyin: 'héng piě wān gōu',   example: '哪', group: 'compound' },
-  { id: 26, name: '横折折折钩',pinyin: 'héng zhé zhé zhé gōu',example:'奶', group: 'compound' },
-  { id: 27, name: '横折弯',    pinyin: 'héng zhé wān',       example: '没', group: 'compound' },
-  { id: 28, name: '竖折撇',    pinyin: 'shù zhé piě',        example: '专', group: 'compound' },
-];
-
-export const GROUPS = [
-  { key: 'basic',    label: 'Basic Strokes 基本笔画',     emoji: '✏️' },
-  { key: 'hooks',    label: 'Hooks & Bends 钩折',         emoji: '🔗' },
-  { key: 'folds',    label: 'Folds 折',                   emoji: '↩️' },
-  { key: 'compound', label: 'Compound Strokes 复合笔画',   emoji: '🔀' },
+  {
+    id: 1, name: 'héng-gōu', chinese: '横钩',
+    examples: ['他', '宅'],
+    path: 'M 8 28 H 52 L 48 40',
+  },
+  {
+    id: 2, name: 'héng-piě', chinese: '横撇',
+    examples: ['又', '反'],
+    path: 'M 8 26 H 44 L 20 52',
+  },
+  {
+    id: 3, name: 'héng-shù', chinese: '横竖',
+    examples: ['丑', '真'],
+    path: 'M 8 24 H 48 V 54',
+  },
+  {
+    id: 4, name: 'héng-piě-héng-gōu', chinese: '横撇横钩',
+    examples: ['乞', '乙'],
+    path: 'M 8 20 H 50 C 56 20 56 30 48 34 L 12 40 H 52 L 50 48',
+  },
+  {
+    id: 5, name: 'héng-shù-gōu', chinese: '横竖钩',
+    examples: ['勺', '匀'],
+    path: 'M 8 22 H 46 V 50 L 54 46',
+  },
+  {
+    id: 6, name: 'héng-shù-héng', chinese: '横竖横',
+    examples: ['凸', '朵'],
+    path: 'M 8 22 H 50 V 44 H 20',
+  },
+  {
+    id: 7, name: 'héng-shù-nà-gōu', chinese: '横竖捺钩',
+    examples: ['九', '飞'],
+    path: 'M 8 20 H 48 V 42 Q 52 55 42 56',
+  },
+  {
+    id: 8, name: 'héng-piě-héng-shù-gōu', chinese: '横撇横竖钩',
+    examples: ['孔', '乃'],
+    path: 'M 8 18 H 44 L 28 32 H 52 V 52 L 56 46',
+  },
+  {
+    id: 9, name: 'shù-héng', chinese: '竖横',
+    examples: ['框', '工'],
+    path: 'M 20 8 V 46 H 52',
+  },
+  {
+    id: 10, name: 'shù-tī', chinese: '竖提',
+    examples: ['辰', '长'],
+    path: 'M 28 8 V 50 L 48 36',
+  },
+  {
+    id: 11, name: 'shù-gōu', chinese: '竖钩',
+    examples: ['水', '小'],
+    path: 'M 28 8 V 52 L 36 56',
+  },
+  {
+    id: 12, name: 'shù-piě', chinese: '竖撇',
+    examples: ['月', '麻'],
+    path: 'M 28 8 V 44 L 10 58',
+  },
+  {
+    id: 13, name: 'shù-héng-gōu', chinese: '竖横钩',
+    examples: ['比', '匕'],
+    path: 'M 20 8 V 46 H 50 L 48 54',
+  },
+  {
+    id: 14, name: 'shù-héng-shù', chinese: '竖横竖',
+    examples: ['吴', '口'],
+    path: 'M 20 8 V 40 H 46 V 58',
+  },
+  {
+    id: 15, name: 'shù-héng-shù-gōu', chinese: '竖横竖钩',
+    examples: ['弟', '号'],
+    path: 'M 20 8 V 38 H 46 V 52 L 52 46',
+  },
+  {
+    id: 16, name: 'piě-tī', chinese: '撇提',
+    examples: ['丝', '级'],
+    path: 'M 16 26 L 36 50 L 52 36',
+  },
+  {
+    id: 17, name: 'piě-héng', chinese: '撇横',
+    examples: ['碌', '录'],
+    path: 'M 16 22 L 32 48 H 54',
+  },
+  {
+    id: 18, name: 'piě-nà', chinese: '撇捺',
+    examples: ['巢', '女'],
+    path: 'M 14 22 L 30 48 L 48 22',
+  },
+  {
+    id: 19, name: 'nà', chinese: '捺',
+    examples: ['衣', '人'],
+    path: 'M 20 22 L 38 44',
+  },
+  {
+    id: 20, name: 'nà-nà', chinese: '捺捺',
+    examples: ['不', '美'],
+    path: 'M 10 24 L 22 42 M 32 24 L 44 42',
+  },
+  {
+    id: 21, name: 'nà-héng-gōu', chinese: '捺横钩',
+    examples: ['心', '忐'],
+    path: 'M 10 32 Q 30 56 50 32 L 52 42',
+  },
+  {
+    id: 22, name: 'nà-shù-gōu', chinese: '捺竖钩',
+    examples: ['狐', '狗'],
+    path: 'M 24 8 Q 52 30 38 56 L 44 54',
+  },
+  {
+    id: 23, name: 'nà-nà-gōu', chinese: '捺捺钩',
+    examples: ['找', '戈'],
+    path: 'M 10 22 L 22 42 L 38 22 L 38 46',
+  },
 ];
