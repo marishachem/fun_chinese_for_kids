@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LOCATIONS, getProgress, getLocationIndex, resetProgress } from '../utils/progress';
 import { getStickerData, STICKERS_TO_UNLOCK } from '../utils/stickers';
+import characters from '../data/characters';
 
 function StickerModal({ src, onClose }) {
   return (
@@ -12,7 +13,6 @@ function StickerModal({ src, onClose }) {
     </div>
   );
 }
-import characters from '../data/characters';
 
 const charMap = Object.fromEntries(characters.map(c => [c.char, c]));
 
