@@ -59,10 +59,11 @@ export const STROKES = [
   },
   {
     id: 8, name: 'héng zhé', chinese: '横折',
+    path: 'M 8 18 L 52 18 L 52 54',
     char: '𠃑', traceChar: '口',
     arrowRot: 0,
-    howToDraw: 'Right then turn down — like the 1st stroke of 口',
-    example: { char: '口', pinyin: 'kǒu', meaning: 'mouth', tone: 3 },
+    howToDraw: 'Go right then turn sharply down — like the 1st stroke of 马',
+    example: { char: '马', pinyin: 'mǎ', meaning: 'horse', tone: 3 },
   },
   {
     id: 9, name: 'héng gōu', chinese: '横钩',
