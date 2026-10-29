@@ -3,7 +3,7 @@ import DrawingCanvas from './DrawingCanvas';
 import { STROKES } from '../data/strokes';
 
 const COLS = 6;
-const ROWS = 5;
+const ROWS = 2;
 const REF_OPS = [1, 0.55, 0.22];
 
 function makeGrid() {
