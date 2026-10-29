@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import characters from '../data/characters';
 
 // ── speech helper ──────────────────────────────────────────
@@ -111,6 +111,121 @@ function getFinalSpeak(f) {
   return FINAL_SPEAK[f] || f;
 }
 
+// ── finals exercise ────────────────────────────────────────
+const SIMPLE_FINALS = [
+  { label: 'a', file: '/audio/finals/a.mp3', hint: 'like "ah"' },
+  { label: 'o', file: '/audio/finals/o.mp3', hint: 'like "oh"' },
+  { label: 'e', file: '/audio/finals/e.mp3', hint: 'like "uh"' },
+  { label: 'i', file: '/audio/finals/i.mp3', hint: 'like "ee"' },
+  { label: 'u', file: '/audio/finals/u.mp3', hint: 'like "oo"' },
+  { label: 'ü', file: '/audio/finals/v.mp3', hint: 'round lips, say "ee"' },
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function FinalsExercise() {
+  const [queue, setQueue]     = useState(() => shuffle(SIMPLE_FINALS));
+  const [qIdx, setQIdx]       = useState(0);
+  const [choice, setChoice]   = useState(null); // null | 'correct' | 'wrong'
+  const [picked, setPicked]   = useState(null);
+  const [score, setScore]     = useState(0);
+  const [total, setTotal]     = useState(0);
+  const audioRef              = useRef(null);
+
+  const current = queue[qIdx % queue.length];
+
+  const playSound = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    const a = new Audio(current.file);
+    audioRef.current = a;
+    a.play().catch(() => {});
+  };
+
+  const handlePick = (label) => {
+    if (choice) return;
+    const correct = label === current.label;
+    setPicked(label);
+    setChoice(correct ? 'correct' : 'wrong');
+    if (correct) setScore(s => s + 1);
+    setTotal(t => t + 1);
+  };
+
+  const handleNext = () => {
+    setPicked(null);
+    setChoice(null);
+    if (qIdx + 1 >= queue.length) {
+      setQueue(shuffle(SIMPLE_FINALS));
+      setQIdx(0);
+    } else {
+      setQIdx(i => i + 1);
+    }
+  };
+
+  const handleRestart = () => {
+    setPicked(null);
+    setChoice(null);
+    setScore(0);
+    setTotal(0);
+    setQueue(shuffle(SIMPLE_FINALS));
+    setQIdx(0);
+  };
+
+  return (
+    <div className="fe-wrap">
+      <div className="fe-score">{score} / {total}</div>
+
+      <p className="fe-prompt">Listen and tap the sound you hear!</p>
+
+      <button className="fe-play-btn" onClick={playSound} aria-label="Play sound">
+        🔊
+      </button>
+
+      {choice && (
+        <div className={`fe-feedback ${choice === 'correct' ? 'fe-feedback--ok' : 'fe-feedback--no'}`}>
+          {choice === 'correct'
+            ? '🎉 Correct!'
+            : `❌ It was  "${current.label}" — ${current.hint}`}
+        </div>
+      )}
+
+      <div className="fe-choices">
+        {SIMPLE_FINALS.map(f => {
+          let cls = 'fe-choice';
+          if (choice) {
+            if (f.label === current.label) cls += ' fe-choice--correct';
+            else if (f.label === picked)   cls += ' fe-choice--wrong';
+            else                           cls += ' fe-choice--dim';
+          }
+          return (
+            <button key={f.label} className={cls} onClick={() => handlePick(f.label)}>
+              {f.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {choice && (
+        <div className="fe-actions">
+          <button className="btn btn-primary fe-next-btn" onClick={handleNext}>Next →</button>
+          {total >= 6 && (
+            <button className="btn btn-secondary" onClick={handleRestart}>↺ Restart</button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── component ──────────────────────────────────────────────
 export default function Pinyin({ onNavigate }) {
   const [tab, setTab] = useState('tones');
@@ -124,7 +239,7 @@ export default function Pinyin({ onNavigate }) {
       <h2 className="page-title">Pinyin &amp; Tones 🎵</h2>
 
       <div className="cat-tabs">
-        {[['tones','Tones 声调'],['initials','Initials 声母'],['finals','Finals 韵母'],['explore','Explore 探索']].map(([id, label]) => (
+        {[['tones','Tones 声调'],['initials','Initials 声母'],['finals','Finals 韵母'],['exercise','Exercise 练习'],['explore','Explore 探索']].map(([id, label]) => (
           <button key={id}
             className={`cat-tab ${tab === id ? 'cat-tab--active' : ''}`}
             onClick={() => setTab(id)}>
@@ -229,6 +344,13 @@ export default function Pinyin({ onNavigate }) {
           <div className="py-note">
             💡 <strong>e</strong> alone sounds like "uh" (not like English "e")
           </div>
+        </div>
+      )}
+
+      {/* ── EXERCISE ── */}
+      {tab === 'exercise' && (
+        <div className="py-section">
+          <FinalsExercise />
         </div>
       )}
 
