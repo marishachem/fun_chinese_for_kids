@@ -22,12 +22,21 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
   const [zoomedSticker, setZoomedSticker] = useState(null);
   const stickerData = getStickerData();
   const earnedStickers = stickerData.stickers || [];
-  const hasStickers = earnedStickers.length >= STICKERS_TO_UNLOCK;
-  const count  = prog.learned.length;
-  const curIdx = getLocationIndex(count);
-  const cur    = LOCATIONS[curIdx];
-  const next   = LOCATIONS[curIdx + 1] || null;
-  const pct    = next
+  const count = prog.learned.length;
+
+  // Both words AND stickers must gate location advancement.
+  // Every 6 stickers earned unlocks one more location advancement.
+  const wordBasedIdx  = getLocationIndex(count);
+  const stickerGates  = Math.floor(earnedStickers.length / STICKERS_TO_UNLOCK);
+  const curIdx        = Math.min(wordBasedIdx, stickerGates);
+
+  // Stickers earned specifically for the current level (6-slot board)
+  const curLevelStickers = earnedStickers.slice(curIdx * STICKERS_TO_UNLOCK, (curIdx + 1) * STICKERS_TO_UNLOCK);
+  const hasStickers = curLevelStickers.length >= STICKERS_TO_UNLOCK;
+
+  const cur  = LOCATIONS[curIdx];
+  const next = LOCATIONS[curIdx + 1] || null;
+  const pct  = next
     ? Math.min(100, ((count - cur.req) / (next.req - cur.req)) * 100)
     : 100;
 
@@ -51,7 +60,7 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
           <div className="mh-count">{count} words learned total</div>
           {next ? (
             <>
-              <div className="mh-next">Next: {next.name} — {next.req - count} more correct answers</div>
+              <div className="mh-next">Next: {next.name}{Math.max(0, next.req - count) > 0 ? ` — ${next.req - count} more words` : ' — words done ✓'}</div>
               <div className="mh-bar-bg">
                 <div className="mh-bar-fill" style={{ width: `${pct}%`, background: cur.color }} />
               </div>
@@ -65,8 +74,10 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
       {/* zigzag */}
       <div className="map-grid">
         {LOCATIONS.map((loc, i) => {
-          const unlocked  = count >= loc.req;
+          const unlocked  = i <= curIdx;
           const isCur     = i === curIdx;
+          // next location is locked by stickers (words are enough but stickers aren't)
+          const lockedByStickers = !unlocked && i === curIdx + 1 && wordBasedIdx > curIdx;
           const isDone    = unlocked && !isCur;
           const isLeft    = i % 2 === 0;
           const isLast    = i === LOCATIONS.length - 1;
@@ -91,21 +102,21 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
                   <>
                     <span className="mc-badge" style={{ background: loc.color }}>📍 You are here</span>
 
-                    {/* sticker board */}
+                    {/* sticker board — shows 6 slots for the current level */}
                     <div className="mc-stickers">
                       {Array.from({ length: STICKERS_TO_UNLOCK }).map((_, si) => (
-                        <div key={si} className={`mc-sticker-slot ${si < earnedStickers.length ? 'mc-sticker-slot--earned' : ''}`}>
-                          {si < earnedStickers.length
-                            ? <img src={earnedStickers[si]} alt="sticker" className="mc-sticker-img"
+                        <div key={si} className={`mc-sticker-slot ${si < curLevelStickers.length ? 'mc-sticker-slot--earned' : ''}`}>
+                          {si < curLevelStickers.length
+                            ? <img src={curLevelStickers[si]} alt="sticker" className="mc-sticker-img"
                                 style={{ cursor: 'pointer' }}
-                                onClick={e => { e.stopPropagation(); setZoomedSticker(earnedStickers[si]); }} />
+                                onClick={e => { e.stopPropagation(); setZoomedSticker(curLevelStickers[si]); }} />
                             : <span className="mc-sticker-empty">✦</span>}
                         </div>
                       ))}
                     </div>
                     <div className="mc-sticker-hint">
-                      {earnedStickers.length < STICKERS_TO_UNLOCK
-                        ? `${STICKERS_TO_UNLOCK - earnedStickers.length} more sticker${STICKERS_TO_UNLOCK - earnedStickers.length !== 1 ? 's' : ''} needed — keep writing!`
+                      {curLevelStickers.length < STICKERS_TO_UNLOCK
+                        ? `${STICKERS_TO_UNLOCK - curLevelStickers.length} more sticker${STICKERS_TO_UNLOCK - curLevelStickers.length !== 1 ? 's' : ''} needed — keep writing!`
                         : '⭐ Stickers complete!'}
                     </div>
 
@@ -124,7 +135,11 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
                   <span className="mc-badge mc-badge--done">✅ Completed!</span>
                 )}
                 {!unlocked && (
-                  <span className="mc-badge mc-badge--lock">🔒 {loc.req - count} words away</span>
+                  <span className="mc-badge mc-badge--lock">
+                    {lockedByStickers
+                      ? `⭐ Collect ${STICKERS_TO_UNLOCK - curLevelStickers.length} more stickers`
+                      : `🔒 ${loc.req - count} words away`}
+                  </span>
                 )}
                 {isDone && locChars.length > 0 && onReview && (
                   <button
