@@ -1,6 +1,6 @@
 const KEY = 'fun_chinese_stickers_v1';
 const CELLS_PER_STICKER = 5;
-const STICKERS_TO_UNLOCK = 5;
+const STICKERS_TO_UNLOCK = 6;
 
 export const STICKER_IMAGES = [
   '/stickers/elsa.png',
