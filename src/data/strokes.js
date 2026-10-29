@@ -42,7 +42,7 @@ export const STROKES = [
   },
   {
     id: 6, name: 'tí', chinese: '提',
-    path: 'M 8 52 C 18 44 36 26 52 10',
+    img: '/strokes/ti.png',
     char: '提', traceChar: '打',
     arrowRot: -45,
     howToDraw: 'From bottom-left up to the right — like the 4th stroke of 我',
