@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { LOCATIONS, getProgress, getLocationIndex, resetProgress } from '../utils/progress';
 import { getStickerData, STICKERS_TO_UNLOCK } from '../utils/stickers';
+
+function StickerModal({ src, onClose }) {
+  return (
+    <div className="sticker-modal-overlay" onClick={onClose}>
+      <div className="sticker-modal-box" onClick={e => e.stopPropagation()}>
+        <img src={src} alt="sticker" className="sticker-modal-img" />
+        <button className="sticker-modal-close" onClick={onClose}>✕</button>
+      </div>
+    </div>
+  );
+}
 import characters from '../data/characters';
 
 const charMap = Object.fromEntries(characters.map(c => [c.char, c]));
@@ -8,6 +19,7 @@ const charMap = Object.fromEntries(characters.map(c => [c.char, c]));
 
 export default function Map({ onNavigate, onReview, onStartLearn }) {
   const [prog] = useState(() => getProgress());
+  const [zoomedSticker, setZoomedSticker] = useState(null);
   const stickerData = getStickerData();
   const earnedStickers = stickerData.stickers || [];
   const hasStickers = earnedStickers.length >= STICKERS_TO_UNLOCK;
@@ -84,7 +96,9 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
                       {Array.from({ length: STICKERS_TO_UNLOCK }).map((_, si) => (
                         <div key={si} className={`mc-sticker-slot ${si < earnedStickers.length ? 'mc-sticker-slot--earned' : ''}`}>
                           {si < earnedStickers.length
-                            ? <img src={earnedStickers[si]} alt="sticker" className="mc-sticker-img" />
+                            ? <img src={earnedStickers[si]} alt="sticker" className="mc-sticker-img"
+                                style={{ cursor: 'pointer' }}
+                                onClick={e => { e.stopPropagation(); setZoomedSticker(earnedStickers[si]); }} />
                             : <span className="mc-sticker-empty">✦</span>}
                         </div>
                       ))}
@@ -165,6 +179,8 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
           );
         })}
       </div>
+
+      {zoomedSticker && <StickerModal src={zoomedSticker} onClose={() => setZoomedSticker(null)} />}
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
         <button className="btn btn-secondary" style={{ fontSize: 13 }} onClick={handleReset}>
