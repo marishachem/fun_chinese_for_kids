@@ -11,6 +11,11 @@ function speak(text, rate = 0.85) {
   window.speechSynthesis.speak(u);
 }
 
+function playAudio(src) {
+  const a = new Audio(src);
+  a.play().catch(() => {});
+}
+
 // ── tone data ──────────────────────────────────────────────
 const TONES = [
   {
@@ -18,24 +23,28 @@ const TONES = [
     name: 'First Tone',   chinese: '第一声',
     desc: 'High and flat — hold it steady, like humming a musical note',
     hanzi: '妈', example: 'mā', meaning: 'mom',
+    audio: '/audio/tones/a1.mp3',
   },
   {
     n: 2, mark: 'á', color: '#d97706', bg: '#fefce8',
     name: 'Second Tone',  chinese: '第二声',
     desc: 'Rising — like asking "really?" in surprise',
     hanzi: '麻', example: 'má', meaning: 'hemp / numb',
+    audio: '/audio/tones/a2.mp3',
   },
   {
     n: 3, mark: 'ǎ', color: '#16a34a', bg: '#f0fdf4',
     name: 'Third Tone',   chinese: '第三声',
     desc: 'Dipping then rising — start medium, dip low, then come back up',
     hanzi: '马', example: 'mǎ', meaning: 'horse',
+    audio: '/audio/tones/a3.mp3',
   },
   {
     n: 4, mark: 'à', color: '#2563eb', bg: '#eff6ff',
     name: 'Fourth Tone',  chinese: '第四声',
     desc: 'Falling sharply — start high and drop fast, like saying "No!"',
     hanzi: '骂', example: 'mà', meaning: 'scold',
+    audio: '/audio/tones/a4.mp3',
   },
 ];
 
@@ -259,7 +268,7 @@ export default function Pinyin({ onNavigate }) {
           <div className="tone-mā-strip">
             {TONES.map(t => (
               <button key={t.n} className="tone-mā-btn" style={{ color: t.color, borderColor: t.color + '44' }}
-                onClick={() => speak(t.hanzi)}>
+                onClick={() => t.audio ? playAudio(t.audio) : speak(t.hanzi)}>
                 <span className="tmb-ex">{t.example}</span>
                 <span className="tmb-meaning">{t.meaning}</span>
                 <span className="tmb-sound">🔊</span>
@@ -284,7 +293,7 @@ export default function Pinyin({ onNavigate }) {
                 <p className="tc-desc">{t.desc}</p>
                 <div className="tc-bottom">
                   <span className="tc-ex">{t.hanzi} = <em>{t.example}</em> ({t.meaning})</span>
-                  <button className="btn-snd" onClick={() => speak(t.hanzi)} aria-label={`Hear ${t.example}`}>🔊</button>
+                  <button className="btn-snd" onClick={() => t.audio ? playAudio(t.audio) : speak(t.hanzi)} aria-label={`Hear ${t.example}`}>🔊</button>
                 </div>
               </div>
             ))}
