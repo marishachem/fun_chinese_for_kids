@@ -38,8 +38,8 @@ export function recordWritingCell() {
   data.cells = (data.cells || 0) + 1;
   const earned = Math.floor(data.cells / CELLS_PER_STICKER);
   let newSticker = null;
-  while (data.stickers.length < earned && data.stickers.length < STICKER_IMAGES.length) {
-    newSticker = STICKER_IMAGES[data.stickers.length];
+  while (data.stickers.length < earned) {
+    newSticker = STICKER_IMAGES[data.stickers.length % STICKER_IMAGES.length];
     data.stickers.push(newSticker);
   }
   save(data);
