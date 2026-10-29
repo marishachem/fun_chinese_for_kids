@@ -110,14 +110,6 @@ const characters = [
   { char: '和', pinyin: 'hé',    tone: 2, meaning: 'and',       emoji: '🔗',  category: 'verbs' },
   { char: '说', pinyin: 'shuō',  tone: 1, meaning: 'say / speak', emoji: '💬', category: 'verbs' },
 
-  // ── sounds ────────────────────────────────────────────
-  { char: '喵', pinyin: 'miāo',  tone: 1, meaning: 'meow (cat)', emoji: '🐱',  category: 'sounds' },
-  { char: '汪', pinyin: 'wāng',  tone: 1, meaning: 'woof (dog)', emoji: '🐶',  category: 'sounds' },
-  { char: '咩', pinyin: 'miē',   tone: 1, meaning: 'baa (sheep)', emoji: '🐑', category: 'sounds' },
-  { char: '哞', pinyin: 'mōu',   tone: 1, meaning: 'moo (cow)',  emoji: '🐄',  category: 'sounds' },
-  { char: '叽', pinyin: 'jī',    tone: 1, meaning: 'chirp (bird)', emoji: '🐦', category: 'sounds' },
-  { char: '吼', pinyin: 'hǒu',   tone: 3, meaning: 'roar (tiger/bear)', emoji: '🐯', category: 'sounds' },
-
   // ── transport ─────────────────────────────────────────
   { char: '车', pinyin: 'chē',   tone: 1, meaning: 'car',       emoji: '🚗',  category: 'transport' },
   { char: '船', pinyin: 'chuán', tone: 2, meaning: 'boat',      emoji: '⛵',  category: 'transport' },
