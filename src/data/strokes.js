@@ -13,6 +13,7 @@ export const STROKES = [
   },
   {
     id: 2, name: 'shù', chinese: '竖',
+    img: '/strokes/shu.png',
     char: '丨', traceChar: '丨',
     arrowRot: 90,
     howToDraw: 'From top to bottom — like the 2nd stroke of 十',
