@@ -39,7 +39,7 @@ export function recordWritingCell() {
   const earned = Math.floor(data.cells / CELLS_PER_STICKER);
   let newSticker = null;
   while (data.stickers.length < earned) {
-    newSticker = STICKER_IMAGES[data.stickers.length % STICKER_IMAGES.length];
+    newSticker = STICKER_IMAGES[Math.floor(Math.random() * STICKER_IMAGES.length)];
     data.stickers.push(newSticker);
   }
   save(data);
