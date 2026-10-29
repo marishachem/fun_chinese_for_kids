@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import DrawingCanvas from './DrawingCanvas';
 import characters from '../data/characters';
+import { recordCompletedGrid } from '../utils/stickers';
 
 const CATS = ['all', ...Array.from(new Set(characters.map(c => c.category))).sort()];
 const TONE_CLS = ['tone-0', 'tone-1', 'tone-2', 'tone-3', 'tone-4'];
@@ -41,18 +42,25 @@ export default function Copybook({ onNavigate, onNewSticker }) {
   }, [ch.char]);
 
   const markDone = useCallback((idx, dataURL) => {
+    let gridComplete = false;
     setGrid(prev => {
       const n = [...prev];
       n[idx] = { state: 'done', drawing: dataURL };
+      const practiceTotal = ROWS * COLS - REF_OPS.length;
+      if (n.filter(c => c.state === 'done').length === practiceTotal) gridComplete = true;
       try { localStorage.setItem(`cbk_${ch.char}`, JSON.stringify(n)); } catch {}
       return n;
     });
+    if (gridComplete) {
+      const newSticker = recordCompletedGrid();
+      if (newSticker && onNewSticker) onNewSticker(newSticker);
+    }
     setActiveIdx(prev => {
       const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
       return nextEmpty !== -1 ? nextEmpty : null;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid, ch.char]);
+  }, [grid, ch.char, onNewSticker]);
 
   const handleCellClick = useCallback((idx, cell) => {
     if (cell.state === 'empty' && idx !== activeIdx) setActiveIdx(idx);
@@ -108,7 +116,6 @@ export default function Copybook({ onNavigate, onNewSticker }) {
               ? <DrawingCanvas
                   guide={<span className="cbk-char">{ch.char}</span>}
                   onDone={(dataURL) => markDone(i, dataURL)}
-                  onNewSticker={onNewSticker}
                 />
               : cell.state === 'ref'
                 ? <span className="cbk-char" style={{ opacity: cell.opacity }}>{ch.char}</span>

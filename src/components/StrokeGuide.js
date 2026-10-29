@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import DrawingCanvas from './DrawingCanvas';
 import { STROKES } from '../data/strokes';
+import { recordCompletedGrid } from '../utils/stickers';
 
 const COLS = 6;
 const ROWS = 2;
@@ -65,18 +66,25 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
   }, [stroke.id]);
 
   const markDone = useCallback((idx, dataURL) => {
+    let gridComplete = false;
     setGrid(prev => {
       const n = [...prev];
       n[idx] = { state: 'done', drawing: dataURL };
+      const practiceTotal = ROWS * COLS - REF_OPS.length;
+      if (n.filter(c => c.state === 'done').length === practiceTotal) gridComplete = true;
       try { localStorage.setItem(`sgg_${stroke.id}`, JSON.stringify(n)); } catch {}
       return n;
     });
+    if (gridComplete) {
+      const newSticker = recordCompletedGrid();
+      if (newSticker && onNewSticker) onNewSticker(newSticker);
+    }
     setActiveIdx(prev => {
       const nextEmpty = grid.findIndex((c, i) => c.state === 'empty' && i > prev);
       return nextEmpty !== -1 ? nextEmpty : null;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid, stroke.id]);
+  }, [grid, stroke.id, onNewSticker]);
 
   const doneCells = grid.filter(c => c.state === 'done').length;
   const totalPractice = ROWS * COLS - REF_OPS.length;
@@ -129,7 +137,6 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
                     ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" />
                     : <span className="cbk-char">{tc}</span>}
                   onDone={(dataURL) => markDone(i, dataURL)}
-                  onNewSticker={onNewSticker}
                 />
               : cell.state === 'ref'
                 ? stroke.img

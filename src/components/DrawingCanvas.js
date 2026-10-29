@@ -1,24 +1,18 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { recordWritingCell } from '../utils/stickers';
 
-export default function DrawingCanvas({ guide, onDone, onNewSticker }) {
+export default function DrawingCanvas({ guide, onDone }) {
   const canvasRef = useRef(null);
   const drawing = useRef(false);
   const hasDrawnRef = useRef(false);
   const savedRef = useRef(false);
   const onDoneRef = useRef(onDone);
-  const onNewStickerRef = useRef(onNewSticker);
   const [hasDrawn, setHasDrawn] = useState(false);
 
   useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
-  useEffect(() => { onNewStickerRef.current = onNewSticker; }, [onNewSticker]);
 
   const completeCell = useCallback((dataURL) => {
     savedRef.current = true;
-    const newSticker = recordWritingCell();
-    if (newSticker && onNewStickerRef.current) onNewStickerRef.current(newSticker);
     onDoneRef.current(dataURL);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

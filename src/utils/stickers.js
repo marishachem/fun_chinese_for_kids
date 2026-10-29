@@ -1,5 +1,5 @@
 const KEY = 'fun_chinese_stickers_v1';
-const CELLS_PER_STICKER = 5;
+const GRIDS_PER_STICKER = 3;  // complete all cells of 3 strokes/characters → 1 sticker
 const STICKERS_TO_UNLOCK = 6;
 
 export const STICKER_IMAGES = [
@@ -24,26 +24,27 @@ export const STICKER_IMAGES = [
 ];
 
 function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || { cells: 0, stickers: [] }; }
-  catch { return { cells: 0, stickers: [] }; }
+  try { return JSON.parse(localStorage.getItem(KEY)) || { grids: 0, stickers: [] }; }
+  catch { return { grids: 0, stickers: [] }; }
 }
 
 function save(data) {
   try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {}
 }
 
-// Call when a writing cell is completed. Returns new sticker image path if one was just earned.
-export function recordWritingCell() {
+// Call when ALL practice cells of one stroke/character grid are filled.
+// Returns new sticker image path if one was just earned, otherwise null.
+export function recordCompletedGrid() {
   const data = load();
-  data.cells = (data.cells || 0) + 1;
-  const earned = Math.floor(data.cells / CELLS_PER_STICKER);
+  data.grids = (data.grids || 0) + 1;
+  const earned = Math.floor(data.grids / GRIDS_PER_STICKER);
   let newSticker = null;
   while (data.stickers.length < earned) {
     newSticker = STICKER_IMAGES[Math.floor(Math.random() * STICKER_IMAGES.length)];
     data.stickers.push(newSticker);
   }
   save(data);
-  return newSticker; // null if no new sticker, or the image path of the new sticker
+  return newSticker;
 }
 
 export function getStickerData() {
@@ -58,4 +59,4 @@ export function hasEnoughStickers() {
   return getStickerCount() >= STICKERS_TO_UNLOCK;
 }
 
-export { STICKERS_TO_UNLOCK, CELLS_PER_STICKER };
+export { STICKERS_TO_UNLOCK, GRIDS_PER_STICKER };
