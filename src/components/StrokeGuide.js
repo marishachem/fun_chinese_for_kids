@@ -135,18 +135,24 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
               ? <DrawingCanvas
                   guide={stroke.img
                     ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" />
-                    : <span className="cbk-char">{tc}</span>}
+                    : stroke.path
+                      ? <StrokeSVG path={stroke.path} size={52} />
+                      : <span className="cbk-char">{tc}</span>}
                   onDone={(dataURL) => markDone(i, dataURL)}
                 />
               : cell.state === 'ref'
                 ? stroke.img
                   ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" style={{ opacity: cell.opacity }} />
-                  : <span className="cbk-char" style={{ opacity: cell.opacity }}>{tc}</span>
+                  : stroke.path
+                    ? <div style={{ opacity: cell.opacity }}><StrokeSVG path={stroke.path} size={52} /></div>
+                    : <span className="cbk-char" style={{ opacity: cell.opacity }}>{tc}</span>
                 : cell.state === 'done'
                   ? <>
                       {stroke.img
                         ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" style={{ opacity: 0.12 }} />
-                        : <span className="cbk-char" style={{ opacity: 0.12 }}>{tc}</span>}
+                        : stroke.path
+                          ? <div style={{ opacity: 0.12 }}><StrokeSVG path={stroke.path} size={52} /></div>
+                          : <span className="cbk-char" style={{ opacity: 0.12 }}>{tc}</span>}
                       {cell.drawing && <img src={cell.drawing} alt="" className="dc-saved-drawing" />}
                     </>
                   : null
