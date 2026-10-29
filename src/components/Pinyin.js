@@ -23,28 +23,28 @@ const TONES = [
     name: 'First Tone',   chinese: '第一声',
     desc: 'High and flat — hold it steady, like humming a musical note',
     hanzi: '妈', example: 'mā', meaning: 'mom',
-    audio: '/audio/tones/a1.mp3',
+    audio: '/audio/tones/a1.mp3', audioMa: '/audio/tones/ma1.mp3',
   },
   {
     n: 2, mark: 'á', color: '#d97706', bg: '#fefce8',
     name: 'Second Tone',  chinese: '第二声',
     desc: 'Rising — like asking "really?" in surprise',
     hanzi: '麻', example: 'má', meaning: 'hemp / numb',
-    audio: '/audio/tones/a2.mp3',
+    audio: '/audio/tones/a2.mp3', audioMa: '/audio/tones/ma2.mp3',
   },
   {
     n: 3, mark: 'ǎ', color: '#16a34a', bg: '#f0fdf4',
     name: 'Third Tone',   chinese: '第三声',
     desc: 'Dipping then rising — start medium, dip low, then come back up',
     hanzi: '马', example: 'mǎ', meaning: 'horse',
-    audio: '/audio/tones/a3.mp3',
+    audio: '/audio/tones/a3.mp3', audioMa: '/audio/tones/ma3.mp3',
   },
   {
     n: 4, mark: 'à', color: '#2563eb', bg: '#eff6ff',
     name: 'Fourth Tone',  chinese: '第四声',
     desc: 'Falling sharply — start high and drop fast, like saying "No!"',
     hanzi: '骂', example: 'mà', meaning: 'scold',
-    audio: '/audio/tones/a4.mp3',
+    audio: '/audio/tones/a4.mp3', audioMa: '/audio/tones/ma4.mp3',
   },
 ];
 
@@ -268,7 +268,7 @@ export default function Pinyin({ onNavigate }) {
           <div className="tone-mā-strip">
             {TONES.map(t => (
               <button key={t.n} className="tone-mā-btn" style={{ color: t.color, borderColor: t.color + '44' }}
-                onClick={() => t.audio ? playAudio(t.audio) : speak(t.hanzi)}>
+                onClick={() => playAudio(t.audioMa)}>
                 <span className="tmb-ex">{t.example}</span>
                 <span className="tmb-meaning">{t.meaning}</span>
                 <span className="tmb-sound">🔊</span>
@@ -276,7 +276,12 @@ export default function Pinyin({ onNavigate }) {
             ))}
           </div>
           <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <button className="btn btn-secondary" onClick={() => speak('妈麻马骂')}>
+            <button className="btn btn-secondary" onClick={() => {
+              const files = TONES.map(t => t.audioMa);
+              let i = 0;
+              const playNext = () => { if (i < files.length) { const a = new Audio(files[i++]); a.onended = playNext; a.play().catch(() => {}); } };
+              playNext();
+            }}>
               🔊 Hear all four in a row
             </button>
           </div>
