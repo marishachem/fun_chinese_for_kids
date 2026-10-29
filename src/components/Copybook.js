@@ -19,7 +19,7 @@ function makeGrid() {
   });
 }
 
-export default function Copybook({ onNavigate }) {
+export default function Copybook({ onNavigate, onNewSticker }) {
   const [cat, setCat] = useState('all');
   const filtered = useMemo(
     () => cat === 'all' ? characters : characters.filter(c => c.category === cat),
@@ -108,6 +108,7 @@ export default function Copybook({ onNavigate }) {
               ? <DrawingCanvas
                   guide={<span className="cbk-char">{ch.char}</span>}
                   onDone={(dataURL) => markDone(i, dataURL)}
+                  onNewSticker={onNewSticker}
                 />
               : cell.state === 'ref'
                 ? <span className="cbk-char" style={{ opacity: cell.opacity }}>{ch.char}</span>

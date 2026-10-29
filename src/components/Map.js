@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { LOCATIONS, getProgress, getLocationIndex, resetProgress } from '../utils/progress';
+import { getStickerData, STICKERS_TO_UNLOCK } from '../utils/stickers';
 import characters from '../data/characters';
 
 const charMap = Object.fromEntries(characters.map(c => [c.char, c]));
 
 
-export default function Map({ onNavigate, onReview }) {
+export default function Map({ onNavigate, onReview, onStartLearn }) {
   const [prog] = useState(() => getProgress());
+  const stickerData = getStickerData();
+  const earnedStickers = stickerData.stickers || [];
+  const hasStickers = earnedStickers.length >= STICKERS_TO_UNLOCK;
   const count  = prog.learned.length;
   const curIdx = getLocationIndex(count);
   const cur    = LOCATIONS[curIdx];
@@ -63,14 +67,44 @@ export default function Map({ onNavigate, onReview }) {
           const card = (
             <div
               className={`map-card ${unlocked ? 'map-card--on' : 'map-card--off'} ${isCur ? 'map-card--cur' : ''}`}
-              style={{ borderColor: isCur ? loc.color : unlocked ? loc.color + '99' : '#e2e8f0' }}
+              style={{ borderColor: isCur ? loc.color : unlocked ? loc.color + '99' : '#e2e8f0',
+                       cursor: isCur && onStartLearn ? 'pointer' : 'default' }}
+              onClick={() => isCur && onStartLearn && onStartLearn(i)}
             >
               <img src={loc.image} alt={loc.nameEn} className="mc-img" />
               <div className="mc-body">
                 <div className="mc-name">{loc.name}</div>
                 <div className="mc-en">{loc.nameEn}</div>
                 {isCur && (
-                  <span className="mc-badge" style={{ background: loc.color }}>📍 You are here</span>
+                  <>
+                    <span className="mc-badge" style={{ background: loc.color }}>📍 You are here</span>
+
+                    {/* sticker board */}
+                    <div className="mc-stickers">
+                      {Array.from({ length: STICKERS_TO_UNLOCK }).map((_, si) => (
+                        <div key={si} className={`mc-sticker-slot ${si < earnedStickers.length ? 'mc-sticker-slot--earned' : ''}`}>
+                          {si < earnedStickers.length
+                            ? <img src={earnedStickers[si]} alt="sticker" className="mc-sticker-img" />
+                            : <span className="mc-sticker-empty">✦</span>}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mc-sticker-hint">
+                      {earnedStickers.length < STICKERS_TO_UNLOCK
+                        ? `${STICKERS_TO_UNLOCK - earnedStickers.length} more sticker${STICKERS_TO_UNLOCK - earnedStickers.length !== 1 ? 's' : ''} needed — keep writing!`
+                        : '⭐ Stickers complete!'}
+                    </div>
+
+                    {onStartLearn && (
+                      <button
+                        className="mc-learn-btn"
+                        style={{ background: loc.color }}
+                        onClick={e => { e.stopPropagation(); onStartLearn(i); }}
+                      >
+                        ✨ Learn words →
+                      </button>
+                    )}
+                  </>
                 )}
                 {isDone && (
                   <span className="mc-badge mc-badge--done">✅ Completed!</span>

@@ -1,26 +1,37 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { recordWritingCell } from '../utils/stickers';
 
-export default function DrawingCanvas({ guide, onDone }) {
+export default function DrawingCanvas({ guide, onDone, onNewSticker }) {
   const canvasRef = useRef(null);
   const drawing = useRef(false);
   const hasDrawnRef = useRef(false);
   const savedRef = useRef(false);
   const onDoneRef = useRef(onDone);
+  const onNewStickerRef = useRef(onNewSticker);
   const [hasDrawn, setHasDrawn] = useState(false);
 
   useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
+  useEffect(() => { onNewStickerRef.current = onNewSticker; }, [onNewSticker]);
+
+  const completeCell = useCallback((dataURL) => {
+    savedRef.current = true;
+    const newSticker = recordWritingCell();
+    if (newSticker && onNewStickerRef.current) onNewStickerRef.current(newSticker);
+    onDoneRef.current(dataURL);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth;
     canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight;
-    // Auto-save on unmount if something was drawn and not already saved via ✓
     return () => {
       if (!savedRef.current && hasDrawnRef.current && canvasRef.current) {
-        onDoneRef.current(canvasRef.current.toDataURL());
+        completeCell(canvasRef.current.toDataURL());
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getPos = (e) => {
@@ -73,10 +84,7 @@ export default function DrawingCanvas({ guide, onDone }) {
       />
 
       {hasDrawn && (
-        <button className="dc-done-btn" onClick={() => {
-          savedRef.current = true;
-          onDone(canvasRef.current.toDataURL());
-        }}>✓</button>
+        <button className="dc-done-btn" onClick={() => completeCell(canvasRef.current.toDataURL())}>✓</button>
       )}
     </div>
   );

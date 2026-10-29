@@ -50,7 +50,7 @@ function DirectionArrow({ rotation }) {
 }
 
 // ── Detail / practice page ───────────────────────────────────
-function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
+function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
   const [grid, setGrid] = useState(makeGrid);
   const [activeIdx, setActiveIdx] = useState(null);
   const tc = stroke.traceChar || stroke.char;
@@ -129,6 +129,7 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
                     ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" />
                     : <span className="cbk-char">{tc}</span>}
                   onDone={(dataURL) => markDone(i, dataURL)}
+                  onNewSticker={onNewSticker}
                 />
               : cell.state === 'ref'
                 ? stroke.img
@@ -168,7 +169,7 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev }) {
 }
 
 // ── Main grid page ────────────────────────────────────────────
-export default function StrokeGuide({ onNavigate }) {
+export default function StrokeGuide({ onNavigate, onNewSticker }) {
   const [selected, setSelected] = useState(null);
 
   if (selected) {
@@ -176,8 +177,9 @@ export default function StrokeGuide({ onNavigate }) {
       <StrokeDetail
         stroke={selected}
         onClose={() => setSelected(null)}
-        onNext={() => setSelected(STROKES[selected.id])}      // next by index
-        onPrev={() => setSelected(STROKES[selected.id - 2])}  // prev by index
+        onNext={() => setSelected(STROKES[selected.id])}
+        onPrev={() => setSelected(STROKES[selected.id - 2])}
+        onNewSticker={onNewSticker}
       />
     );
   }
