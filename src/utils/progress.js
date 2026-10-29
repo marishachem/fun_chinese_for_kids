@@ -2,7 +2,7 @@ const KEY = 'fun_chinese_v1';
 
 export const LOCATIONS = [
   { id: 0,  req: 0,   name: '梦幻草地',  nameEn: 'Dream Meadow',      color: '#f9a8d4', image: '/images/locations/loc01.png' },
-  { id: 1,  req: 10,  name: '独角兽草原', nameEn: 'Unicorn Prairie',   color: '#c084fc', image: '/images/locations/loc02.png' },
+  { id: 1,  req: 10,  name: '莲花仙境',   nameEn: 'Lotus Fairy Pond',  color: '#c084fc', image: '/images/locations/loc02.png' },
   { id: 2,  req: 20,  name: '星星草原',  nameEn: 'Starry Prairie',     color: '#93c5fd', image: '/images/locations/loc03.png' },
   { id: 3,  req: 30,  name: '魔法森林',  nameEn: 'Magic Forest',       color: '#34d399', image: '/images/locations/loc04.png' },
   { id: 4,  req: 40,  name: '兔子森林',  nameEn: 'Bunny Forest',       color: '#86efac', image: '/images/locations/loc05.png' },
