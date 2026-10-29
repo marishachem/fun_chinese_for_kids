@@ -42,10 +42,11 @@ export const STROKES = [
   },
   {
     id: 6, name: 'tí', chinese: '提',
-    char: '乛', traceChar: '乛',
+    path: 'M 8 52 C 18 44 36 26 52 10',
+    char: '提', traceChar: '打',
     arrowRot: -45,
-    howToDraw: 'From bottom-left to top-right — a quick upward flick',
-    example: { char: '地', pinyin: 'dì', meaning: 'earth', tone: 4 },
+    howToDraw: 'From bottom-left up to the right — like the 4th stroke of 我',
+    example: { char: '我', pinyin: 'wǒ', meaning: 'I / me', tone: 3 },
   },
   {
     id: 7, name: 'shù gōu', chinese: '竖钩',
