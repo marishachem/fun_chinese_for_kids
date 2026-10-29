@@ -5,6 +5,7 @@
 export const STROKES = [
   {
     id: 1, name: 'héng', chinese: '横',
+    img: '/strokes/heng.png',
     char: '一', traceChar: '一',
     arrowRot: 0,
     howToDraw: 'From left to right — like the stroke in 一',
