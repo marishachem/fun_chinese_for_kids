@@ -66,10 +66,11 @@ export const STROKES = [
   },
   {
     id: 9, name: 'héng gōu', chinese: '横钩',
+    path: 'M 8 26 C 24 22 40 20 52 20 L 52 20 Q 52 22 46 32',
     char: '𠄎', traceChar: '了',
     arrowRot: 0,
-    howToDraw: 'Right then hook down-left at the end',
-    example: { char: '字', pinyin: 'zì', meaning: 'character', tone: 4 },
+    howToDraw: 'Go right then hook down-left at the end — like the 1st stroke of 子',
+    example: { char: '子', pinyin: 'zǐ', meaning: 'son / child', tone: 3 },
   },
   {
     id: 10, name: 'wān gōu', chinese: '弯钩',
