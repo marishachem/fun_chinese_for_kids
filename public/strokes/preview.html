@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Stroke Preview</title>
+<style>
+body { font-family: sans-serif; background:#f5f5f5; padding:20px; }
+h1 { margin-bottom:4px; }
+p { margin:0 0 16px; color:#666; font-size:13px; }
+.grid { display:grid; grid-template-columns: repeat(7,1fr); gap:8px; }
+.cell { background:#fff; border:2px solid #ddd; border-radius:8px; padding:8px; text-align:center; min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.cell img { width:80px; height:80px; display:block; }
+.label { font-size:10px; color:#888; margin-top:4px; }
+.num { font-weight:bold; font-size:12px; color:#333; }
+</style>
+</head>
+<body>
+<h1>Basic Strokes — 28 paths (sorted by position)</h1>
+<p>Row 0 top → Row 3 bottom, left to right</p>
+<div class="grid">
+</div>
+<script>
+// sorted by position (row then col), output from python script
+const sorted = [
+  {i:0, id:'path908'},
+  {i:1, id:'path880'},
+  {i:2, id:'path918'},
+  {i:3, id:'path916'},
+  {i:4, id:'path914'},
+  {i:5, id:'path910'},
+  {i:6, id:'path912'},
+  {i:7, id:'path924'},
+  {i:8, id:'path928'},
+  {i:9, id:'path932'},
+  {i:10, id:'path920'},
+  {i:11, id:'path930'},
+  {i:12, id:'path926'},
+  {i:13, id:'path922'},
+  {i:14, id:'path938'},
+  {i:15, id:'path940'},
+  {i:16, id:'path936'},  // skip 16,17 for now — wrong column order
+  {i:17, id:'path934'},
+  {i:18, id:'path942'},
+  {i:19, id:'path946'},
+  {i:20, id:'path944'},
+  {i:21, id:'path954'},
+  {i:22, id:'path960'},
+  {i:23, id:'path950'},
+  {i:24, id:'path948'},
+  {i:25, id:'path958'},
+  {i:26, id:'path952'},
+  {i:27, id:'path956'},
+];
+const grid = document.querySelector('.grid');
+sorted.forEach(({i, id}) => {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+  const src = `/strokes/svg/${String(i).padStart(2,'0')}_${id}.svg`;
+  cell.innerHTML = `<img src="${src}" onerror="this.style.border='2px solid red'"><div class="num">#${i}</div><div class="label">${id}</div>`;
+  grid.appendChild(cell);
+});
+</script>
+</body>
+</html>
