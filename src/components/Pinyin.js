@@ -95,13 +95,30 @@ function ToneChart() {
 
 // ── initials ───────────────────────────────────────────────
 const INITIALS = [
-  { group: 'Lip sounds 唇音',  items: ['b','p','m','f'] },
-  { group: 'Tongue tip 舌尖',  items: ['d','t','n','l'] },
-  { group: 'Throat 喉音',      items: ['g','k','h'] },
-  { group: 'Palatal 腭音',     items: ['j','q','x'] },
-  { group: 'Retroflex 卷舌',   items: ['zh','ch','sh','r'] },
-  { group: 'Sibilant 平舌',    items: ['z','c','s'] },
+  { group: '唇音',  items: ['b','p','m','f'] },
+  { group: '舌尖音', items: ['d','t','n','l'] },
+  { group: '喉音',  items: ['g','k','h'] },
+  { group: '腭音',  items: ['j','q','x'] },
+  { group: '卷舌音', items: ['zh','ch','sh','r'] },
+  { group: '平舌音', items: ['z','c','s'] },
 ];
+
+const INITIAL_AUDIO_BASE = {
+  b:'b', p:'p', m:'m', f:'f',
+  d:'d', t:'t', n:'n', l:'l',
+  g:'g', k:'k', h:'h',
+  j:'j', q:'q', x:'x',
+  zh:'zh', ch:'ch', sh:'sh', r:'r',
+  z:'z', c:'c', s:'s',
+};
+
+function playInitialTone(s, tone) {
+  const base = INITIAL_AUDIO_BASE[s];
+  if (base) {
+    const a = new Audio(`/audio/initials/${base}${tone}.mp3`);
+    a.play().catch(() => {});
+  }
+}
 
 // speak initial with a neutral vowel so it's audible
 const INITIAL_SPEAK = { b:'玻',p:'坡',m:'摸',f:'佛',d:'得',t:'特',n:'讷',l:'勒',g:'哥',k:'科',h:'喝',j:'基',q:'欺',x:'希',zh:'知',ch:'吃',sh:'诗',r:'日',z:'资',c:'雌',s:'思' };
@@ -339,24 +356,32 @@ export default function Pinyin({ onNavigate }) {
       {tab === 'initials' && (
         <div className="py-section">
           <p className="py-intro">
-            <strong>Initials (声母)</strong> are the consonants at the <em>start</em> of a syllable — like "b" in "bā".
-            Tap any to hear it!
+            <strong>Initials (声母)</strong> are the sounds at the <em>start</em> of a syllable — like "b" in "bā".
+            Tap a tone to hear it!
           </p>
           {INITIALS.map(({ group, items }) => (
             <div key={group} className="py-group">
               <div className="py-group-label">{group}</div>
               <div className="py-chips">
                 {items.map(s => (
-                  <button key={s} className="py-chip"
-                    onClick={() => speak(INITIAL_SPEAK[s] || s, 0.7)}>
-                    {s}
-                  </button>
+                  <div key={s} className="py-chip-card">
+                    <span className="py-chip-name">{s}</span>
+                    <div className="py-chip-tones">
+                      {[1,2,3,4].map(t => (
+                        <button key={t} className={`py-chip-t py-chip-t${t}`}
+                          onClick={() => playInitialTone(s, t)}>{t}</button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
           ))}
           <div className="py-note">
-            💡 <strong>zh ch sh</strong> are "retroflex" — curl your tongue back to make them!
+            💡 <strong>zh ch sh</strong> — curl your tongue back to make them!
+          </div>
+          <div className="py-note">
+            💡 <strong>z c s</strong> — keep your tongue flat behind your teeth.
           </div>
         </div>
       )}
