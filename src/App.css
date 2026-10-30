@@ -576,6 +576,29 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
   border-color: var(--red); background: var(--red-light);
   color: var(--red); transform: scale(1.05);
 }
+/* finals card with 4 tone buttons */
+.py-chip-card {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 8px 10px; background: white;
+  border: 2px solid var(--border); border-radius: 12px;
+}
+.py-chip-name { font-size: 16px; font-weight: 700; color: var(--text); }
+.py-chip-tones { display: flex; gap: 3px; }
+.py-chip-t {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid; font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: all .12s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+}
+.py-chip-t1 { border-color: #dc2626; color: #dc2626; }
+.py-chip-t1:hover { background: #fef2f2; transform: scale(1.15); }
+.py-chip-t2 { border-color: #d97706; color: #d97706; }
+.py-chip-t2:hover { background: #fefce8; transform: scale(1.15); }
+.py-chip-t3 { border-color: #16a34a; color: #16a34a; }
+.py-chip-t3:hover { background: #f0fdf4; transform: scale(1.15); }
+.py-chip-t4 { border-color: #2563eb; color: #2563eb; }
+.py-chip-t4:hover { background: #eff6ff; transform: scale(1.15); }
 .py-note {
   font-size: 13px; padding: 10px 14px; background: var(--gold-light);
   border-left: 4px solid var(--gold); border-radius: var(--r-sm);
