@@ -120,6 +120,30 @@ function getFinalSpeak(f) {
   return FINAL_SPEAK[f] || f;
 }
 
+// YoYo Chinese CDN — standalone spelling + tone 1 for each final
+const YOYO = 'https://cdn.yoyochinese.com/audio/pychart/';
+const FINAL_AUDIO = {
+  'a':'a1',   'o':'o1',   'e':'e1',
+  'i':'yi1',  'u':'wu1',  'ü':'yu1',
+  'ai':'ai1', 'ei':'ei1', 'ui':'wei1',
+  'ao':'ao1', 'ou':'ou1', 'iu':'you1',
+  'ia':'ya1', 'ie':'ye1', 'ua':'wa1', 'uo':'wo1', 'üe':'yue1',
+  'an':'an1', 'en':'en1', 'in':'yin1', 'un':'wen1', 'ün':'yun1',
+  'ian':'yan1', 'uan':'wan1', 'üan':'yuan1',
+  'ang':'ang1', 'eng':'eng1', 'ing':'ying1', 'ong':null,
+  'iang':'yang1', 'uang':'wang1', 'iong':'yong1',
+};
+
+function playFinal(f) {
+  const file = FINAL_AUDIO[f];
+  if (file) {
+    const a = new Audio(`${YOYO}${file}.mp3`);
+    a.play().catch(() => speak(getFinalSpeak(f), 0.7));
+  } else {
+    speak(getFinalSpeak(f), 0.7);
+  }
+}
+
 // ── finals exercise ────────────────────────────────────────
 const SIMPLE_FINALS = [
   { label: 'a', file: '/audio/finals/a.mp3', hint: 'like "ah"' },
@@ -345,7 +369,7 @@ export default function Pinyin({ onNavigate }) {
               <div className="py-chips">
                 {items.map(s => (
                   <button key={s} className="py-chip"
-                    onClick={() => speak(getFinalSpeak(s), 0.7)}>
+                    onClick={() => playFinal(s)}>
                     {s}
                   </button>
                 ))}
