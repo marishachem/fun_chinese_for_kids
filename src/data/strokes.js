@@ -76,19 +76,19 @@ export const STROKES = [
     example: { char: '子', pinyin: 'zǐ', meaning: 'son / child', tone: 3, strokeIdx: 0 },
   },
   {
-    id: 10, name: 'wān gōu', chinese: '弯钩',
-    img: '/strokes/wangou.svg',
-    char: '𠃌', traceChar: '子',
-    arrowRot: 90,
-    howToDraw: 'Curve down like a bow, then hook right at the bottom',
-    example: { char: '子', pinyin: 'zǐ', meaning: 'child', tone: 3, strokeIdx: 0 },
-  },
-  {
-    id: 11, name: 'shù wān gōu', chinese: '竖弯钩',
+    id: 10, name: 'shù wān gōu', chinese: '竖弯钩',
     img: '/strokes/shuwangou.svg',
     char: '乚', traceChar: '七',
     arrowRot: -90,
     howToDraw: 'Go down, curve right, then hook up — like the 2nd stroke of 七',
     example: { char: '七', pinyin: 'qī', meaning: 'seven', tone: 1, strokeIdx: 1 },
+  },
+  {
+    id: 11, name: 'shù zhé zhé gōu', chinese: '竖折折钩',
+    img: '/strokes/shuzhezhegou.svg',
+    char: '𠃑', traceChar: '马',
+    arrowRot: 135,
+    howToDraw: 'Go down, fold right, fold down, then hook — like the 2nd stroke of 马',
+    example: { char: '马', pinyin: 'mǎ', meaning: 'horse', tone: 3, strokeIdx: 1 },
   },
 ];
