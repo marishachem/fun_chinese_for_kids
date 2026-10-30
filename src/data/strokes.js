@@ -9,7 +9,7 @@ export const STROKES = [
     char: '一', traceChar: '一',
     arrowRot: 0,
     howToDraw: 'From left to right — like the stroke in 一',
-    example: { char: '一', pinyin: 'yī', meaning: 'one', tone: 1 },
+    example: { char: '一', pinyin: 'yī', meaning: 'one', tone: 1, strokeIdx: 0 },
   },
   {
     id: 2, name: 'shù', chinese: '竖',
@@ -17,7 +17,7 @@ export const STROKES = [
     char: '丨', traceChar: '丨',
     arrowRot: 90,
     howToDraw: 'From top to bottom — like the 2nd stroke of 十',
-    example: { char: '十', pinyin: 'shí', meaning: 'ten', tone: 2 },
+    example: { char: '十', pinyin: 'shí', meaning: 'ten', tone: 2, strokeIdx: 1 },
   },
   {
     id: 3, name: 'piě', chinese: '撇',
@@ -25,7 +25,7 @@ export const STROKES = [
     char: '丿', traceChar: '丿',
     arrowRot: 135,
     howToDraw: 'From top, sweep down to the left — like the 1st stroke of 八',
-    example: { char: '八', pinyin: 'bā', meaning: 'eight', tone: 1 },
+    example: { char: '八', pinyin: 'bā', meaning: 'eight', tone: 1, strokeIdx: 0 },
   },
   {
     id: 4, name: 'nà', chinese: '捺',
@@ -33,7 +33,7 @@ export const STROKES = [
     char: '入', traceChar: '入',
     arrowRot: 45,
     howToDraw: 'From top, press down to the right — like the 2nd stroke of 八',
-    example: { char: '八', pinyin: 'bā', meaning: 'eight', tone: 1 },
+    example: { char: '八', pinyin: 'bā', meaning: 'eight', tone: 1, strokeIdx: 1 },
   },
   {
     id: 5, name: 'diǎn', chinese: '点',
@@ -41,7 +41,7 @@ export const STROKES = [
     char: '丶', traceChar: '丶',
     arrowRot: 45,
     howToDraw: 'Press down and lift quickly — like a raindrop',
-    example: { char: '主', pinyin: 'zhǔ', meaning: 'master', tone: 3 },
+    example: { char: '主', pinyin: 'zhǔ', meaning: 'master', tone: 3, strokeIdx: 0 },
   },
   {
     id: 6, name: 'tí', chinese: '提',
@@ -49,7 +49,7 @@ export const STROKES = [
     char: '提', traceChar: '打',
     arrowRot: -45,
     howToDraw: 'From bottom-left up to the right — like the 4th stroke of 我',
-    example: { char: '我', pinyin: 'wǒ', meaning: 'I / me', tone: 3 },
+    example: { char: '我', pinyin: 'wǒ', meaning: 'I / me', tone: 3, strokeIdx: 3 },
   },
   {
     id: 7, name: 'shù gōu', chinese: '竖钩',
@@ -57,7 +57,7 @@ export const STROKES = [
     char: '亅', traceChar: '亅',
     arrowRot: 90,
     howToDraw: 'From top to bottom, then hook left — like the middle stroke of 小',
-    example: { char: '小', pinyin: 'xiǎo', meaning: 'small', tone: 3 },
+    example: { char: '小', pinyin: 'xiǎo', meaning: 'small', tone: 3, strokeIdx: 0 },
   },
   {
     id: 8, name: 'héng zhé', chinese: '横折',
@@ -65,7 +65,7 @@ export const STROKES = [
     char: '𠃑', traceChar: '口',
     arrowRot: 0,
     howToDraw: 'Go right then turn sharply down — like the 1st stroke of 马',
-    example: { char: '马', pinyin: 'mǎ', meaning: 'horse', tone: 3 },
+    example: { char: '马', pinyin: 'mǎ', meaning: 'horse', tone: 3, strokeIdx: 0 },
   },
   {
     id: 9, name: 'héng gōu', chinese: '横钩',
@@ -73,7 +73,7 @@ export const STROKES = [
     char: '𠄎', traceChar: '了',
     arrowRot: 0,
     howToDraw: 'Go right then hook down-left at the end — like the 1st stroke of 子',
-    example: { char: '子', pinyin: 'zǐ', meaning: 'son / child', tone: 3 },
+    example: { char: '子', pinyin: 'zǐ', meaning: 'son / child', tone: 3, strokeIdx: 0 },
   },
   {
     id: 10, name: 'wān gōu', chinese: '弯钩',
@@ -81,6 +81,6 @@ export const STROKES = [
     char: '𠃌', traceChar: '子',
     arrowRot: 90,
     howToDraw: 'Curve down like a bow, then hook right at the bottom',
-    example: { char: '子', pinyin: 'zǐ', meaning: 'child', tone: 3 },
+    example: { char: '子', pinyin: 'zǐ', meaning: 'child', tone: 3, strokeIdx: 0 },
   },
 ];

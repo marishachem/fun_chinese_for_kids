@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import DrawingCanvas from './DrawingCanvas';
 import { STROKES } from '../data/strokes';
 import { recordCompletedGrid } from '../utils/stickers';
@@ -22,6 +22,35 @@ function StrokeSVG({ path, size = 52 }) {
     <svg viewBox="0 0 60 60" width={size} height={size} style={{ display: 'block' }}>
       <path d={path} fill="none" stroke="#1e293b" strokeWidth="5.5"
         strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Renders the example character with one stroke highlighted in orange
+function CharHighlight({ char, strokeIdx, size = 150 }) {
+  const [paths, setPaths] = useState(null);
+
+  useEffect(() => {
+    setPaths(null);
+    fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0.1/${encodeURIComponent(char)}.json`)
+      .then(r => r.json())
+      .then(d => setPaths(d.strokes))
+      .catch(() => setPaths([]));
+  }, [char]);
+
+  if (!paths) {
+    return <span style={{ fontSize: size * 0.72, lineHeight: 1, fontFamily: 'serif' }}>{char}</span>;
+  }
+
+  return (
+    <svg viewBox="0 0 1024 1024" width={size} height={size} aria-hidden="true">
+      <g transform="translate(0,900) scale(1,-1)">
+        {paths.map((d, i) => (
+          <path key={i} d={d}
+            fill={i === strokeIdx ? '#f97316' : '#d1d5db'}
+          />
+        ))}
+      </g>
     </svg>
   );
 }
@@ -110,10 +139,16 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
         <div className="sgg-how-to">
           ✏️ {stroke.howToDraw}
         </div>
-        <div className="sgg-example-label">
-          Example: <span className="sgg-ex-char">{stroke.example.char}</span>
-          <span className="sgg-ex-pinyin"> {stroke.example.pinyin}</span>
-          <span className="sgg-ex-meaning"> · {stroke.example.meaning}</span>
+        <div className="sgg-example-block">
+          <CharHighlight
+            char={stroke.example.char}
+            strokeIdx={stroke.example.strokeIdx ?? 0}
+            size={150}
+          />
+          <div className="sgg-example-meta">
+            <span className="sgg-ex-pinyin">{stroke.example.pinyin}</span>
+            <span className="sgg-ex-meaning">{stroke.example.meaning}</span>
+          </div>
         </div>
       </div>
 

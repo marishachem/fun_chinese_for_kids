@@ -928,8 +928,16 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
   font-size: 14px; color: var(--muted);
 }
 .sgg-ex-char   { font-size: 22px; font-family: 'Noto Serif SC', serif; color: #1e293b; margin-left: 4px; }
-.sgg-ex-pinyin { font-weight: 600; color: #db2777; }
-.sgg-ex-meaning { color: var(--muted); }
+.sgg-ex-pinyin { font-weight: 700; color: #db2777; font-size: 16px; }
+.sgg-ex-meaning { color: var(--muted); font-size: 14px; }
+
+.sgg-example-block {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 8px;
+}
+.sgg-example-meta {
+  display: flex; flex-direction: column; gap: 4px;
+}
 
 /* ── Location Learn ──────────────────────────────────── */
 .mc-learn-btn {
