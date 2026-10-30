@@ -120,8 +120,8 @@ function getFinalSpeak(f) {
   return FINAL_SPEAK[f] || f;
 }
 
-// YoYo Chinese CDN — standalone spelling base per final (no tone digit)
-const YOYO = 'https://cdn.yoyochinese.com/audio/pychart/';
+// Local finals audio (downloaded from YoYo Chinese)
+const YOYO = '/audio/finals/';
 const FINAL_AUDIO_BASE = {
   'a':'a',   'o':'o',   'e':'e',
   'i':'yi',  'u':'wu',  'ü':'yu',
