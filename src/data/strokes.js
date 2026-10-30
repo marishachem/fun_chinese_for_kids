@@ -91,4 +91,12 @@ export const STROKES = [
     howToDraw: 'Go down, fold right, fold down, then hook — like the 2nd stroke of 马',
     example: { char: '马', pinyin: 'mǎ', meaning: 'horse', tone: 3, strokeIdx: 1 },
   },
+  {
+    id: 12, name: 'héng zhé wān gōu', chinese: '横折弯钩',
+    img: '/strokes/hengzhewangou.svg',
+    char: '𠃎', traceChar: '九',
+    arrowRot: -45,
+    howToDraw: 'Go right, fold down, curve left, then hook up — like the 2nd stroke of 九',
+    example: { char: '九', pinyin: 'jiǔ', meaning: 'nine', tone: 3, strokeIdx: 1 },
+  },
 ];
