@@ -436,12 +436,12 @@ export default function Pinyin({ onNavigate }) {
               <div className="py-group-label">{group}</div>
               <div className="py-chips">
                 {items.map(s => (
-                  <div key={s} className="py-chip-card">
-                    <span className="py-chip-name">{s}</span>
+                  <div key={s} className="py-chip-card py-chip-card--syl">
+                    <span className="py-chip-syl-base">{s}</span>
                     <div className="py-chip-tones">
                       {[1,2,3,4].map(t => (
-                        <button key={t} className={`py-chip-t py-chip-t${t}`}
-                          onClick={() => playFinalTone(s, t)}>{t}</button>
+                        <button key={t} className={`py-chip-t py-chip-tsyl py-chip-t${t}`}
+                          onClick={() => playFinalTone(s, t)}>{addTone(s, t)}</button>
                       ))}
                     </div>
                   </div>
