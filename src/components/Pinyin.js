@@ -111,7 +111,7 @@ const FINALS = [
   { group: 'Simple vowels 单韵母',   items: ['a','o','e','i','u','ü'] },
   { group: 'Compound -i / -u 复韵母', items: ['ai','ei','ui','ao','ou','iu','ia','ie','ua','uo','üe'] },
   { group: 'Nasal -n 前鼻音',        items: ['an','en','in','un','ün','ian','uan','üan'] },
-  { group: 'Nasal -ng 后鼻音',       items: ['ang','eng','ing','ong','iang','uang','iong'] },
+  { group: 'Nasal -ng 后鼻音',       items: ['ang','eng','ing','iang','uang','iong'] },
 ];
 
 const FINAL_SPEAK = { 'ü':'鱼','üe':'月','ün':'云','üan':'远','ia':'家','ie':'爷','ua':'花','uo':'火','ao':'猫','ou':'楼','iu':'牛','ui':'水','uan':'换','ian':'天','uang':'王','iang':'想','iong':'熊','ong':'红','ing':'星','ang':'帮','eng':'风','ing 2':'鸡','an':'安','en':'恩','in':'因','un':'运' };
@@ -130,7 +130,7 @@ const FINAL_AUDIO_BASE = {
   'ia':'ya', 'ie':'ye', 'ua':'wa', 'uo':'wo', 'üe':'yue',
   'an':'an', 'en':'en', 'in':'yin', 'un':'wen', 'ün':'yun',
   'ian':'yan', 'uan':'wan', 'üan':'yuan',
-  'ang':'ang', 'eng':'eng', 'ing':'ying', 'ong': null,
+  'ang':'ang', 'eng':'eng', 'ing':'ying',
   'iang':'yang', 'uang':'wang', 'iong':'yong',
 };
 
