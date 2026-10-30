@@ -583,6 +583,26 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
   border: 2px solid var(--border); border-radius: 12px;
 }
 .py-chip-name { font-size: 16px; font-weight: 700; color: var(--text); }
+/* per-initial row: heading + syllable chips */
+.py-initial-row {
+  display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;
+}
+.py-initial-heading {
+  font-size: 18px; font-weight: 800; color: var(--text);
+  min-width: 30px; padding-top: 8px; text-align: center;
+}
+.py-chips--wrap { flex-wrap: wrap; }
+/* syllable chip: small base label + 4 toned buttons */
+.py-chip-card--syl { padding: 5px 7px; gap: 3px; min-width: 0; }
+.py-chip-syl-base {
+  font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: .02em;
+}
+/* syllable tone button (wider than number button) */
+.py-chip-tsyl {
+  width: auto !important; min-width: 26px;
+  padding: 2px 4px; border-radius: 6px;
+  font-size: 11px;
+}
 .py-chip-tones { display: flex; gap: 3px; }
 .py-chip-t {
   width: 22px; height: 22px; border-radius: 50%;

@@ -94,7 +94,7 @@ function ToneChart() {
 }
 
 // ── initials ───────────────────────────────────────────────
-const INITIALS = [
+const INITIAL_GROUPS = [
   { group: '唇音',  items: ['b','p','m','f'] },
   { group: '舌尖音', items: ['d','t','n','l'] },
   { group: '喉音',  items: ['g','k','h'] },
@@ -103,25 +103,56 @@ const INITIALS = [
   { group: '平舌音', items: ['z','c','s'] },
 ];
 
-const INITIAL_AUDIO_BASE = {
-  b:'b', p:'p', m:'m', f:'f',
-  d:'d', t:'t', n:'n', l:'l',
-  g:'g', k:'k', h:'h',
-  j:'j', q:'q', x:'x',
-  zh:'zh', ch:'ch', sh:'sh', r:'r',
-  z:'z', c:'c', s:'s',
+const INITIAL_SYLLABLES = {
+  b:  ['ba','bai','ban','bang','bao','bei','ben','beng','bi','bian','biao','bie','bin','bing','bo','bu'],
+  p:  ['pa','pai','pan','pang','pao','pei','pen','peng','pi','pian','piao','pie','pin','ping','po','pou','pu'],
+  m:  ['ma','mai','man','mang','mao','me','mei','men','meng','mi','mian','miao','mie','min','ming','miu','mo','mou','mu'],
+  f:  ['fa','fan','fang','fei','fen','feng','fo','fou','fu'],
+  d:  ['da','dai','dan','dang','dao','de','dei','den','deng','di','dian','diao','die','ding','diu','dong','dou','du','duan','dui','dun','duo'],
+  t:  ['ta','tai','tan','tang','tao','te','teng','ti','tian','tiao','tie','ting','tong','tou','tu','tuan','tui','tun','tuo'],
+  n:  ['na','nai','nan','nang','nao','ne','nei','nen','neng','ni','nian','niang','niao','nie','nin','ning','niu','nong','nou','nu','nuan','nuo','nü','nüe'],
+  l:  ['la','lai','lan','lang','lao','le','lei','leng','li','lia','lian','liang','liao','lie','lin','ling','liu','lo','long','lou','lu','luan','lun','luo','lü','lüe'],
+  g:  ['ga','gai','gan','gang','gao','ge','gei','gen','geng','gong','gou','gu','gua','guai','guan','guang','gui','gun','guo'],
+  k:  ['ka','kai','kan','kang','kao','ke','kei','ken','keng','kong','kou','ku','kua','kuai','kuan','kuang','kui','kun','kuo'],
+  h:  ['ha','hai','han','hang','hao','he','hei','hen','heng','hong','hou','hu','hua','huai','huan','huang','hui','hun','huo'],
+  j:  ['ji','jia','jian','jiang','jiao','jie','jin','jing','jiong','jiu','ju','juan','jue','jun'],
+  q:  ['qi','qia','qian','qiang','qiao','qie','qin','qing','qiong','qiu','qu','quan','que','qun'],
+  x:  ['xi','xia','xian','xiang','xiao','xie','xin','xing','xiong','xiu','xu','xuan','xue','xun'],
+  zh: ['zha','zhai','zhan','zhang','zhao','zhe','zhei','zhen','zheng','zhi','zhong','zhou','zhu','zhua','zhuai','zhuan','zhuang','zhui','zhun','zhuo'],
+  ch: ['cha','chai','chan','chang','chao','che','chen','cheng','chi','chong','chou','chu','chuai','chuan','chuang','chui','chun','chuo'],
+  sh: ['sha','shai','shan','shang','shao','she','shei','shen','sheng','shi','shou','shu','shua','shuai','shuan','shuang','shui','shun','shuo'],
+  r:  ['ran','rang','rao','re','ren','reng','ri','rong','rou','ru','ruan','rui','run','ruo'],
+  z:  ['za','zai','zan','zang','zao','ze','zei','zen','zeng','zi','zong','zou','zu','zuan','zui','zun','zuo'],
+  c:  ['ca','cai','can','cang','cao','ce','cen','ceng','ci','cong','cou','cu','cuan','cui','cun','cuo'],
+  s:  ['sa','sai','san','sang','sao','se','sen','seng','si','song','sou','su','suan','sui','sun','suo'],
 };
 
-function playInitialTone(s, tone) {
-  const base = INITIAL_AUDIO_BASE[s];
-  if (base) {
-    const a = new Audio(`/audio/initials/${base}${tone}.mp3`);
-    a.play().catch(() => {});
+const TONE_VOWELS = {
+  a: ['ā','á','ǎ','à'],
+  e: ['ē','é','ě','è'],
+  i: ['ī','í','ǐ','ì'],
+  o: ['ō','ó','ǒ','ò'],
+  u: ['ū','ú','ǔ','ù'],
+  'ü': ['ǖ','ǘ','ǚ','ǜ'],
+};
+
+function addTone(syllable, tone) {
+  const t = tone - 1;
+  if (syllable.includes('a')) return syllable.replace('a', TONE_VOWELS.a[t]);
+  if (syllable.includes('e')) return syllable.replace('e', TONE_VOWELS.e[t]);
+  if (syllable.includes('ou')) return syllable.replace('o', TONE_VOWELS.o[t]);
+  for (let i = syllable.length - 1; i >= 0; i--) {
+    const c = syllable[i];
+    if (TONE_VOWELS[c]) return syllable.slice(0, i) + TONE_VOWELS[c][t] + syllable.slice(i + 1);
   }
+  return syllable;
 }
 
-// speak initial with a neutral vowel so it's audible
-const INITIAL_SPEAK = { b:'玻',p:'坡',m:'摸',f:'佛',d:'得',t:'特',n:'讷',l:'勒',g:'哥',k:'科',h:'喝',j:'基',q:'欺',x:'希',zh:'知',ch:'吃',sh:'诗',r:'日',z:'资',c:'雌',s:'思' };
+function playSyllable(syllable, tone) {
+  const key = syllable.replace(/ü/g, 'v');
+  const a = new Audio(`/audio/syllables/${key}${tone}.mp3`);
+  a.play().catch(() => {});
+}
 
 // ── finals ─────────────────────────────────────────────────
 const FINALS = [
@@ -356,25 +387,32 @@ export default function Pinyin({ onNavigate }) {
       {tab === 'initials' && (
         <div className="py-section">
           <p className="py-intro">
-            <strong>Initials (声母)</strong> are the sounds at the <em>start</em> of a syllable — like "b" in "bā".
-            Tap a tone to hear it!
+            <strong>Initials (声母)</strong> are the sounds at the <em>start</em> of a syllable.
+            Tap any toned syllable to hear it!
           </p>
-          {INITIALS.map(({ group, items }) => (
+          {INITIAL_GROUPS.map(({ group, items }) => (
             <div key={group} className="py-group">
               <div className="py-group-label">{group}</div>
-              <div className="py-chips">
-                {items.map(s => (
-                  <div key={s} className="py-chip-card">
-                    <span className="py-chip-name">{s}</span>
-                    <div className="py-chip-tones">
-                      {[1,2,3,4].map(t => (
-                        <button key={t} className={`py-chip-t py-chip-t${t}`}
-                          onClick={() => playInitialTone(s, t)}>{t}</button>
-                      ))}
-                    </div>
+              {items.map(s => (
+                <div key={s} className="py-initial-row">
+                  <div className="py-initial-heading">{s}</div>
+                  <div className="py-chips py-chips--wrap">
+                    {(INITIAL_SYLLABLES[s] || []).map(syl => (
+                      <div key={syl} className="py-chip-card py-chip-card--syl">
+                        <span className="py-chip-syl-base">{syl}</span>
+                        <div className="py-chip-tones">
+                          {[1,2,3,4].map(t => (
+                            <button key={t} className={`py-chip-t py-chip-tsyl py-chip-t${t}`}
+                              onClick={() => playSyllable(syl, t)}>
+                              {addTone(syl, t)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           ))}
           <div className="py-note">
