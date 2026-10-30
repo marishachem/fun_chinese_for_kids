@@ -83,4 +83,12 @@ export const STROKES = [
     howToDraw: 'Curve down like a bow, then hook right at the bottom',
     example: { char: '子', pinyin: 'zǐ', meaning: 'child', tone: 3, strokeIdx: 0 },
   },
+  {
+    id: 11, name: 'shù wān gōu', chinese: '竖弯钩',
+    img: '/strokes/shuwangou.svg',
+    char: '乚', traceChar: '七',
+    arrowRot: -90,
+    howToDraw: 'Go down, curve right, then hook up — like the 2nd stroke of 七',
+    example: { char: '七', pinyin: 'qī', meaning: 'seven', tone: 1, strokeIdx: 1 },
+  },
 ];
