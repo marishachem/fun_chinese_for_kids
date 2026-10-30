@@ -99,4 +99,12 @@ export const STROKES = [
     howToDraw: 'Go right, fold down, curve left, then hook up — like the 2nd stroke of 九',
     example: { char: '九', pinyin: 'jiǔ', meaning: 'nine', tone: 3, strokeIdx: 1 },
   },
+  {
+    id: 13, name: 'piě diǎn', chinese: '撇点',
+    img: '/strokes/piedian.svg',
+    char: '女', traceChar: '女',
+    arrowRot: 135,
+    howToDraw: 'Sweep down-left then flick right — like the 1st stroke of 女',
+    example: { char: '女', pinyin: 'nǚ', meaning: 'woman', tone: 3, strokeIdx: 0 },
+  },
 ];
