@@ -87,6 +87,8 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
             .map(ch => charMap[ch])
             .filter(Boolean);
 
+          const levelStickers = earnedStickers.slice(i * STICKERS_TO_UNLOCK, (i + 1) * STICKERS_TO_UNLOCK);
+
           const card = (
             <div
               className={`map-card ${unlocked ? 'map-card--on' : 'map-card--off'} ${isCur ? 'map-card--cur' : ''}`}
@@ -98,48 +100,45 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
               <div className="mc-body">
                 <div className="mc-name">{loc.name}</div>
                 <div className="mc-en">{loc.nameEn}</div>
-                {isCur && (
-                  <>
-                    <span className="mc-badge" style={{ background: loc.color }}>📍 You are here</span>
 
-                    {/* sticker board — shows 6 slots for the current level */}
-                    <div className="mc-stickers">
-                      {Array.from({ length: STICKERS_TO_UNLOCK }).map((_, si) => (
-                        <div key={si} className={`mc-sticker-slot ${si < curLevelStickers.length ? 'mc-sticker-slot--earned' : ''}`}>
-                          {si < curLevelStickers.length
-                            ? <img src={curLevelStickers[si]} alt="sticker" className="mc-sticker-img"
-                                style={{ cursor: 'pointer' }}
-                                onClick={e => { e.stopPropagation(); setZoomedSticker(curLevelStickers[si]); }} />
-                            : <span className="mc-sticker-empty">✦</span>}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mc-sticker-hint">
-                      {curLevelStickers.length < STICKERS_TO_UNLOCK
-                        ? `${STICKERS_TO_UNLOCK - curLevelStickers.length} more sticker${STICKERS_TO_UNLOCK - curLevelStickers.length !== 1 ? 's' : ''} needed — keep writing!`
-                        : '⭐ Stickers complete!'}
-                    </div>
-
-                    {onStartLearn && (
-                      <button
-                        className="mc-learn-btn"
-                        style={{ background: loc.color }}
-                        onClick={e => { e.stopPropagation(); onStartLearn(i); }}
-                      >
-                        ✨ Learn words →
-                      </button>
-                    )}
-                  </>
-                )}
-                {isDone && (
-                  <span className="mc-badge mc-badge--done">✅ Completed!</span>
-                )}
+                {isCur && <span className="mc-badge" style={{ background: loc.color }}>📍 You are here</span>}
+                {isDone && <span className="mc-badge mc-badge--done">✅ Completed!</span>}
                 {!unlocked && (
                   <span className="mc-badge mc-badge--lock">
                     {lockedByStickers
                       ? `⭐ Collect ${STICKERS_TO_UNLOCK - curLevelStickers.length} more stickers`
                       : `🔒 ${loc.req - count} words away`}
                   </span>
+                )}
+
+                {/* sticker board — all cards */}
+                <div className="mc-stickers">
+                  {Array.from({ length: STICKERS_TO_UNLOCK }).map((_, si) => (
+                    <div key={si} className={`mc-sticker-slot ${si < levelStickers.length ? 'mc-sticker-slot--earned' : ''}`}>
+                      {si < levelStickers.length
+                        ? <img src={levelStickers[si]} alt="sticker" className="mc-sticker-img"
+                            style={{ cursor: 'pointer' }}
+                            onClick={e => { e.stopPropagation(); setZoomedSticker(levelStickers[si]); }} />
+                        : <span className="mc-sticker-empty">✦</span>}
+                    </div>
+                  ))}
+                </div>
+                {isCur && (
+                  <div className="mc-sticker-hint">
+                    {levelStickers.length < STICKERS_TO_UNLOCK
+                      ? `${STICKERS_TO_UNLOCK - levelStickers.length} more sticker${STICKERS_TO_UNLOCK - levelStickers.length !== 1 ? 's' : ''} needed — keep writing!`
+                      : '⭐ Stickers complete!'}
+                  </div>
+                )}
+
+                {isCur && onStartLearn && (
+                  <button
+                    className="mc-learn-btn"
+                    style={{ background: loc.color }}
+                    onClick={e => { e.stopPropagation(); onStartLearn(i); }}
+                  >
+                    ✨ Learn words →
+                  </button>
                 )}
                 {isDone && locChars.length > 0 && onReview && (
                   <button
