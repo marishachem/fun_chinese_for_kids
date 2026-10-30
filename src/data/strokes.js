@@ -52,12 +52,12 @@ export const STROKES = [
     example: { char: '我', pinyin: 'wǒ', meaning: 'I / me', tone: 3, strokeIdx: 3 },
   },
   {
-    id: 7, name: 'shù gōu', chinese: '竖钩',
-    img: '/strokes/shugou.svg',
-    char: '亅', traceChar: '亅',
+    id: 7, name: 'shù wān', chinese: '竖弯',
+    img: '/strokes/shuwan.svg',
+    char: '𠃊', traceChar: '四',
     arrowRot: 90,
-    howToDraw: 'From top to bottom, then hook left — like the middle stroke of 小',
-    example: { char: '小', pinyin: 'xiǎo', meaning: 'small', tone: 3, strokeIdx: 0 },
+    howToDraw: 'Go down then curve right at the bottom — like the 4th stroke of 四',
+    example: { char: '四', pinyin: 'sì', meaning: 'four', tone: 4, strokeIdx: 3 },
   },
   {
     id: 8, name: 'héng zhé', chinese: '横折',
