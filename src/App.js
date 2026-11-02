@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase';
+import { loadFromCloud } from './utils/db';
+import { setProgressUid } from './utils/progress';
+import { setStickerUid } from './utils/stickers';
 import floralBg from './images/floral-bg.jpg';
 import Home from './components/Home';
 import FlashCards from './components/FlashCards';
@@ -33,6 +38,21 @@ function App() {
   const [reviewLoc, setReviewLoc] = useState(null);
   const [learnLocIdx, setLearnLocIdx] = useState(null);
   const [newSticker, setNewSticker] = useState(null);
+  const [cloudReady, setCloudReady] = useState(false);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        await signInAnonymously(auth);
+        return;
+      }
+      setProgressUid(user.uid);
+      setStickerUid(user.uid);
+      await loadFromCloud(user.uid);
+      setCloudReady(true);
+    });
+    return unsub;
+  }, []);
 
   const navigate = (p) => {
     if (p !== 'quiz') { setReviewSet(null); setReviewLoc(null); }

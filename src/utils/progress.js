@@ -1,4 +1,8 @@
+import { saveToCloud } from './db';
+
 const KEY = 'fun_chinese_v1';
+let _uid = null;
+export function setProgressUid(uid) { _uid = uid; }
 
 export const LOCATIONS = [
   { id: 0,  req: 0,   name: '梦幻草地',  nameEn: 'Dream Meadow',      color: '#f9a8d4', image: '/images/locations/loc01.png' },
@@ -34,11 +38,15 @@ export function markLearned(char) {
     const prevIdx = getLocationIndex(p.learned.length);
     p.learned = [...p.learned, char];
     localStorage.setItem(KEY, JSON.stringify(p));
+    if (_uid) saveToCloud(_uid);
     const newIdx = getLocationIndex(p.learned.length);
     return { changed: true, count: p.learned.length, newLocIdx: newIdx > prevIdx ? newIdx : null };
   } catch { return { changed: false, count: 0, newLocIdx: null }; }
 }
 
 export function resetProgress() {
-  try { localStorage.removeItem(KEY); } catch {}
+  try {
+    localStorage.removeItem(KEY);
+    if (_uid) saveToCloud(_uid);
+  } catch {}
 }

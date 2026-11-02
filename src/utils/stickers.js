@@ -1,4 +1,8 @@
+import { saveToCloud } from './db';
+
 const KEY = 'fun_chinese_stickers_v1';
+let _uid = null;
+export function setStickerUid(uid) { _uid = uid; }
 const GRIDS_PER_STICKER = 3;  // complete all cells of 3 strokes/characters → 1 sticker
 const STICKERS_TO_UNLOCK = 6;
 
@@ -44,6 +48,7 @@ export function recordCompletedGrid() {
     data.stickers.push(newSticker);
   }
   save(data);
+  if (_uid) saveToCloud(_uid);
   return newSticker;
 }
 
