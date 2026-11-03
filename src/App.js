@@ -40,6 +40,20 @@ function App() {
   const [newSticker, setNewSticker] = useState(null);
   const [cloudReady, setCloudReady] = useState(false);
 
+  // Browser back/forward support
+  useEffect(() => {
+    window.history.replaceState({ page: 'home' }, '');
+    const handlePop = (e) => {
+      const { page: p, locIdx } = e.state || { page: 'home' };
+      setPage(p);
+      if (p !== 'quiz') { setReviewSet(null); setReviewLoc(null); }
+      if (p === 'locationlearn' && locIdx != null) setLearnLocIdx(locIdx);
+      else if (p !== 'locationlearn') setLearnLocIdx(null);
+    };
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, []);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -61,17 +75,20 @@ function App() {
   const navigate = (p) => {
     if (p !== 'quiz') { setReviewSet(null); setReviewLoc(null); }
     setPage(p);
+    window.history.pushState({ page: p }, '');
   };
 
   const startReview = (chars, loc) => {
     setReviewSet(chars);
     setReviewLoc(loc);
     setPage('quiz');
+    window.history.pushState({ page: 'quiz' }, '');
   };
 
   const startLearn = (locIdx) => {
     setLearnLocIdx(locIdx);
     setPage('locationlearn');
+    window.history.pushState({ page: 'locationlearn', locIdx }, '');
   };
 
   if (page === 'locationlearn' && learnLocIdx !== null) {
