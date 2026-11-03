@@ -799,6 +799,13 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
 .mc-body  { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; padding: 10px 12px; text-align: center; }
 .mc-name  { font-size: 20px; font-weight: 800; line-height: 1.1; }
 .mc-en    { font-size: 12px; color: var(--muted); }
+.mc-diff-bar {
+  display: flex; width: 80%; height: 5px; border-radius: 3px; overflow: hidden; gap: 2px; margin: 2px 0;
+}
+.mc-diff-seg { border-radius: 3px; min-width: 4px; }
+.mc-diff-1 { background: #34d399; }
+.mc-diff-2 { background: #f97316; }
+
 .mc-badge {
   display: inline-block; font-size: 11px; font-weight: 700;
   padding: 3px 10px; border-radius: 10px; color: white; margin-top: 5px;
@@ -919,13 +926,30 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; }
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: fill; pointer-events: none;
 }
-.dc-done-btn {
-  position: absolute; bottom: 4px; right: 6px;
-  background: #db2777; color: white; border: none;
+.dc-clear-btn {
+  position: absolute; bottom: 4px; right: 4px;
+  background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;
   border-radius: 50%; width: 26px; height: 26px;
   font-size: 13px; font-weight: 700; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 6px rgba(219,39,119,.4);
+  z-index: 10;
+}
+.dc-clear-btn:hover { background: #e2e8f0; }
+
+/* HanziQuizCanvas */
+.hq-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.hq-canvas { width: 100%; height: 100%; }
+.hq-canvas svg { width: 100% !important; height: 100% !important; }
+.hq-complete {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(22,163,74,.12); color: #16a34a;
+  font-size: 28px; font-weight: 700; border-radius: 12px;
+  pointer-events: none;
+}
+.hq-hint {
+  position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: #f97316; white-space: nowrap; pointer-events: none;
 }
 
 .sg-arrow-svg {

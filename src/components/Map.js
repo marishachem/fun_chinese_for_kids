@@ -87,6 +87,11 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
             .map(ch => charMap[ch])
             .filter(Boolean);
 
+          // difficulty preview: chars that WILL appear at this location
+          const locAllChars = characters.slice(loc.req, nextReq);
+          const d1count = locAllChars.filter(c => c.difficulty === 1).length;
+          const d2count = locAllChars.filter(c => c.difficulty === 2).length;
+
           const levelStickers = earnedStickers.slice(i * STICKERS_TO_UNLOCK, (i + 1) * STICKERS_TO_UNLOCK);
 
           const card = (
@@ -100,6 +105,14 @@ export default function Map({ onNavigate, onReview, onStartLearn }) {
               <div className="mc-body">
                 <div className="mc-name">{loc.name}</div>
                 <div className="mc-en">{loc.nameEn}</div>
+
+                {/* difficulty bar */}
+                {locAllChars.length > 0 && (
+                  <div className="mc-diff-bar" title={`${d1count} easy · ${d2count} medium`}>
+                    <div className="mc-diff-seg mc-diff-1" style={{ flex: d1count }} />
+                    {d2count > 0 && <div className="mc-diff-seg mc-diff-2" style={{ flex: d2count }} />}
+                  </div>
+                )}
 
                 {isCur && <span className="mc-badge" style={{ background: loc.color }}>📍 You are here</span>}
                 {isDone && <span className="mc-badge mc-badge--done">✅ Completed!</span>}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import DrawingCanvas from './DrawingCanvas';
+import HanziQuizCanvas from './HanziQuizCanvas';
 import { STROKES } from '../data/strokes';
 import { recordCompletedGrid } from '../utils/stickers';
 
@@ -115,6 +115,16 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grid, stroke.id, onNewSticker]);
 
+  const clearCell = useCallback((idx) => {
+    setGrid(prev => {
+      const n = [...prev];
+      n[idx] = { state: 'empty' };
+      try { localStorage.setItem(`sgg_${stroke.id}`, JSON.stringify(n)); } catch {}
+      return n;
+    });
+    setActiveIdx(idx);
+  }, [stroke.id]);
+
   const doneCells = grid.filter(c => c.state === 'done').length;
   const totalPractice = ROWS * COLS - REF_OPS.length;
 
@@ -167,13 +177,9 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
             onClick={() => { if (cell.state === 'empty' && i !== activeIdx) setActiveIdx(i); }}
           >
             {i === activeIdx
-              ? <DrawingCanvas
-                  guide={stroke.img
-                    ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" />
-                    : stroke.path
-                      ? <StrokeSVG path={stroke.path} size={52} />
-                      : <span className="cbk-char">{tc}</span>}
-                  onDone={(dataURL) => markDone(i, dataURL)}
+              ? <HanziQuizCanvas
+                  char={tc}
+                  onDone={() => markDone(i, null)}
                 />
               : cell.state === 'ref'
                 ? stroke.img
@@ -184,11 +190,12 @@ function StrokeDetail({ stroke, onClose, onNext, onPrev, onNewSticker }) {
                 : cell.state === 'done'
                   ? <>
                       {stroke.img
-                        ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" style={{ opacity: 0.12 }} />
+                        ? <img src={stroke.img} alt={stroke.name} className="cbk-stroke-img" style={{ opacity: cell.drawing ? 0.12 : 0.55 }} />
                         : stroke.path
-                          ? <div style={{ opacity: 0.12 }}><StrokeSVG path={stroke.path} size={52} /></div>
-                          : <span className="cbk-char" style={{ opacity: 0.12 }}>{tc}</span>}
+                          ? <div style={{ opacity: cell.drawing ? 0.12 : 0.55, filter: cell.drawing ? undefined : 'hue-rotate(300deg)' }}><StrokeSVG path={stroke.path} size={52} /></div>
+                          : <span className="cbk-char" style={{ opacity: cell.drawing ? 0.12 : 0.55, color: cell.drawing ? undefined : '#db2777' }}>{tc}</span>}
                       {cell.drawing && <img src={cell.drawing} alt="" className="dc-saved-drawing" />}
+                      <button className="dc-clear-btn" onClick={(e) => { e.stopPropagation(); clearCell(i); }} title="Redo">↺</button>
                     </>
                   : null
             }

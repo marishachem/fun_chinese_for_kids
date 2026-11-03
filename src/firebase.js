@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBL4-Pvw94BmMeskSl-fU8LPeZSAQ12ibU",
-  authDomain: "fun-chinese-for-kids.firebaseapp.com",
-  projectId: "fun-chinese-for-kids",
-  storageBucket: "fun-chinese-for-kids.firebasestorage.app",
-  messagingSenderId: "624450502906",
-  appId: "1:624450502906:web:5b10e266058e3100ae0943"
+  apiKey:            process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain:        process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId:         process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket:     process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId:             process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);

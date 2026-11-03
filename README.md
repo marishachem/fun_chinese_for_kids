@@ -1,70 +1,137 @@
-# Getting Started with Create React App
+# 🐼 Fun Chinese for Kids
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An interactive web app for children aged **6–8** to learn Mandarin Chinese through play, drawing, and exploration.
 
-## Available Scripts
+🌐 **Live app:** https://fun-chinese-for-kids.web.app
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## What's inside
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 🗺️ Map Journey
+A story-map with **20 magical locations** (Dream Meadow → Dragon Palace). Each location unlocks when you learn enough words **and** earn 6 stickers. Characters get gradually harder as you progress — the first 6 steps use only easy characters (difficulty 1), then medium characters (difficulty 2) are slowly introduced, reaching ~90% harder vocab by the final steps.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 📚 Flashcards
+Tap a card to flip and reveal the character's meaning, pinyin, and emoji. Organized into **24 categories**: animals, body, clothes, colors, directions, emotions, food, fruits, home, kitchen, music, nature, numbers, people, places, school, shapes, sports, time, toys, transport, verbs, weather, adjectives.
 
-### `npm test`
+### ✏️ Copybook
+Practice writing characters stroke-by-stroke. Uses **hanzi-writer quiz mode** — the app checks each stroke you draw in real time. Fill the 8×6 grid; completing a full grid earns a sticker. Individual cells can be redone with the ↺ button.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 🖌️ Stroke Guide
+Learn the **23 fundamental Chinese brush strokes** with calligraphic SVG illustrations and guided practice grids (same hanzi-writer quiz mode). Knowing strokes helps you write any character.
 
-### `npm run build`
+### 🔤 Pinyin
+- **Tones** — hear and compare the 4 tones with real audio (mā má mǎ mà)
+- **Initials** — all consonant onsets with toned audio examples
+- **Finals** — all vowel endings with toned audio examples
+- 1,464 syllable audio files (all valid initial+final combinations × 4 tones), stored locally — no CDN dependency
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### ⭐ Stickers
+Earn princess stickers by completing practice grids. Tap any sticker to zoom in. 6 stickers unlock the next map location (both word count *and* stickers are required).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Characters
 
-### `npm run eject`
+**331 unique characters** across 24 categories. Each has:
+- `char` — the Chinese character
+- `pinyin` — romanized pronunciation
+- `tone` — tone number (1–4)
+- `meaning` — English meaning
+- `emoji` — visual hint
+- `category` — one of 24 learning groups
+- `difficulty` — `1` (simple, few strokes, HSK 1–2) or `2` (medium, more strokes, HSK 2–3)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The array is ordered so map steps naturally gate difficulty: steps 1–6 are 100% difficulty-1, then d2 is introduced gradually, reaching ~90% by step 13+.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Tech stack
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+| Layer | Technology |
+|---|---|
+| UI | React 19 (Create React App) |
+| Stroke recognition | [hanzi-writer](https://hanziwriter.org) v3.7.3 — quiz mode |
+| Cloud sync | Firebase Firestore + Anonymous Auth |
+| Hosting | Firebase Hosting |
+| Progress storage | `localStorage` (offline) + Firestore (cloud) |
+| Audio | Local MP3 files (public/audio/) |
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Getting started
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+# 1. Clone the repo
+git clone <repo-url>
+cd fun_chinese_for_kids
 
-### Code Splitting
+# 2. Install dependencies
+npm install
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# 3. Set up Firebase credentials — copy .env.example and fill in your values
+cp .env.example .env.local
+# Edit .env.local with your Firebase project credentials
 
-### Analyzing the Bundle Size
+# 4. Start the dev server
+npm start
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+# 5. Build + deploy to Firebase
+npm run build
+npx firebase-tools deploy --only hosting
+```
 
-### Making a Progressive Web App
+### Firebase setup
+Create a Firebase project, enable **Firestore** and **Anonymous Authentication**, then copy your web app config into `.env.local`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## Project structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```
+src/
+  components/
+    Map.js            — Journey map with 20 locations, sticker boards, difficulty bars
+    Flashcards.js     — Category-filtered card flip game
+    Copybook.js       — Character practice grid (hanzi-writer quiz)
+    StrokeGuide.js    — Stroke library with SVG illustrations + practice
+    Pinyin.js         — Tones / Initials / Finals audio tabs
+    HanziQuizCanvas.js — Reusable stroke-by-stroke quiz component
+    DrawingCanvas.js  — Freehand drawing canvas (legacy, copybook backup)
+    LocationLearn.js  — Per-location word learning flow
+  data/
+    characters.js     — 331 characters with difficulty, category, pinyin
+    strokes.js        — 23 stroke definitions with SVG paths
+  utils/
+    progress.js       — LOCATIONS array, markLearned, localStorage + Firestore sync
+    stickers.js       — Sticker earn/save logic
+    db.js             — Firestore read/write helpers
+  App.js              — Routing between screens (History API)
+  App.css             — All styles (single file, CSS custom props for theming)
+public/
+  audio/              — 1,464 syllable MP3s + tone demo files
+  images/             — Stickers, illustrations, location artwork
+  images/locations/   — 11 watercolor location images (loc01–loc11.png/jpg)
+```
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## How to use with kids
 
-### `npm run build` fails to minify
+1. **Start on the Map** — pick "Learn words" at Dream Meadow (the first location).
+2. **Learn 15 words** at that location via flashcard-style presentation.
+3. **Practice writing** in Copybook or Stroke Guide — complete 3-cell grids to earn stickers.
+4. **Earn 6 stickers** to unlock the next location.
+5. **Review** completed locations anytime via the ✨ Review button.
+6. Use **Pinyin** to reinforce pronunciation before/after new characters.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Tips for 6–8 year olds:**
+- Do 1 location per session (15 words + some writing practice = ~20 min)
+- The Stroke Guide works best *before* Copybook — kids who know the strokes write much better
+- Stickers are highly motivating — don't skip the writing practice!
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a full history of changes.

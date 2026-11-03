@@ -65,9 +65,18 @@ export default function DrawingCanvas({ guide, onDone }) {
 
   const stopDraw = () => { drawing.current = false; };
 
+  const handleClear = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hasDrawnRef.current = false;
+    savedRef.current = false;
+    setHasDrawn(false);
+  };
+
   return (
     <div className="dc-wrap">
-      {/* faint guide behind the canvas */}
       {guide && <div className="dc-guide">{guide}</div>}
 
       <canvas
@@ -78,7 +87,7 @@ export default function DrawingCanvas({ guide, onDone }) {
       />
 
       {hasDrawn && (
-        <button className="dc-done-btn" onClick={() => completeCell(canvasRef.current.toDataURL())}>✓</button>
+        <button className="dc-clear-btn" onClick={handleClear} title="Clear">↺</button>
       )}
     </div>
   );

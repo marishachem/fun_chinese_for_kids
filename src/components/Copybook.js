@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import DrawingCanvas from './DrawingCanvas';
+import HanziQuizCanvas from './HanziQuizCanvas';
 import characters from '../data/characters';
 import { recordCompletedGrid } from '../utils/stickers';
 
@@ -62,6 +62,16 @@ export default function Copybook({ onNavigate, onNewSticker }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grid, ch.char, onNewSticker]);
 
+  const clearCell = useCallback((idx) => {
+    setGrid(prev => {
+      const n = [...prev];
+      n[idx] = { state: 'empty' };
+      try { localStorage.setItem(`cbk_${ch.char}`, JSON.stringify(n)); } catch {}
+      return n;
+    });
+    setActiveIdx(idx);
+  }, [ch.char]);
+
   const handleCellClick = useCallback((idx, cell) => {
     if (cell.state === 'empty' && idx !== activeIdx) setActiveIdx(idx);
   }, [activeIdx]);
@@ -113,16 +123,17 @@ export default function Copybook({ onNavigate, onNewSticker }) {
             onClick={() => handleCellClick(i, cell)}
           >
             {i === activeIdx
-              ? <DrawingCanvas
-                  guide={<span className="cbk-char">{ch.char}</span>}
-                  onDone={(dataURL) => markDone(i, dataURL)}
+              ? <HanziQuizCanvas
+                  char={ch.char}
+                  onDone={() => markDone(i, null)}
                 />
               : cell.state === 'ref'
                 ? <span className="cbk-char" style={{ opacity: cell.opacity }}>{ch.char}</span>
                 : cell.state === 'done'
                   ? <>
-                      <span className="cbk-char" style={{ opacity: 0.12 }}>{ch.char}</span>
+                      <span className="cbk-char" style={{ opacity: cell.drawing ? 0.12 : 0.55, color: cell.drawing ? undefined : '#db2777' }}>{ch.char}</span>
                       {cell.drawing && <img src={cell.drawing} alt="" className="dc-saved-drawing" />}
+                      <button className="dc-clear-btn" onClick={(e) => { e.stopPropagation(); clearCell(i); }} title="Redo">↺</button>
                     </>
                   : null
             }
