@@ -43,7 +43,11 @@ function App() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        await signInAnonymously(auth);
+        try { await signInAnonymously(auth); }
+        catch (e) {
+          console.warn('Anonymous auth unavailable, using local storage only', e.code);
+          setCloudReady(true);
+        }
         return;
       }
       setProgressUid(user.uid);
